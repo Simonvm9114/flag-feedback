@@ -1,0 +1,36 @@
+{
+  "name": "flag-feedback",
+  "version": "1.0.0",
+  "description": "Framework-agnostic vanilla JS Web Component for collecting structured user feedback",
+  "type": "module",
+  "main": "./dist/flag-feedback.umd.js",
+  "module": "./dist/flag-feedback.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/flag-feedback.esm.js",
+      "require": "./dist/flag-feedback.umd.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  },
+  "keywords": [
+    "feedback",
+    "web-component",
+    "custom-element",
+    "screenshot",
+    "interaction-recording"
+  ],
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "nanoid": "^5.0.9"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}

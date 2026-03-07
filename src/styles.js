@@ -1,5 +1,6 @@
 export const STYLES = `
   *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
 
   /* ── Floating button ─────────────────────────────────── */
   .fb-btn {

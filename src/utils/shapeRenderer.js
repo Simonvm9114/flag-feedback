@@ -3,7 +3,7 @@
  * Used by Annotator and _renderScreenshotToDataUrl.
  */
 
-const STROKE_COLOR = '#ef4444';
+import { ANNOTATION_STROKE_COLOR } from '../constants.js';
 
 /**
  * Computes stroke line width from image width for consistent appearance at any resolution.
@@ -25,7 +25,7 @@ export function drawShapesOnContext(ctx, shapes, width, options = {}) {
   if (!shapes || shapes.length === 0) return;
   const lw = strokeLineWidth(width);
   ctx.save();
-  ctx.strokeStyle = STROKE_COLOR;
+  ctx.strokeStyle = ANNOTATION_STROKE_COLOR;
   ctx.lineWidth = lw;
   ctx.lineJoin = 'round';
   if (Array.isArray(options.lineDash)) ctx.setLineDash(options.lineDash);

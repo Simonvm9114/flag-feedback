@@ -2,7 +2,7 @@
  * Submits the feedback package to the endpoint. Handles fetch, timeout, and error mapping.
  */
 
-const DEFAULT_TIMEOUT_MS = 30_000;
+import { FETCH_TIMEOUT_MS } from '../constants.js';
 
 /**
  * Submits feedback to the configured endpoint.
@@ -12,7 +12,7 @@ const DEFAULT_TIMEOUT_MS = 30_000;
  * @returns {Promise<void>} Resolves on success. Throws with user-friendly message on failure.
  */
 export async function submit(endpoint, pkg, options = {}) {
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const timeoutMs = options.timeoutMs ?? FETCH_TIMEOUT_MS;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 

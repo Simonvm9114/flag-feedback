@@ -1,7 +1,6 @@
 import { getRecorder } from './recorder.js';
 import { buildWidgetDOM } from './utils/widgetDOM.js';
 import { bindWidgetEvents } from './utils/widgetEvents.js';
-import { captureScreenshot } from './screenshot.js';
 import { validateEndpoint } from './utils/endpointValidator.js';
 import { executeSubmitFlow } from './utils/feedbackSubmitFlow.js';
 import { applyPosition } from './utils/positionManager.js';
@@ -11,8 +10,14 @@ import {
   applyRestoredState,
   hasUnsavedState,
 } from './utils/widgetState.js';
-import { renderScreenshotList } from './utils/screenshotListView.js';
-import { devWarn, devError } from './utils/devLogger.js';
+import {
+  renderScreenshots,
+  showScreenshot,
+  clearScreenshots,
+  saveActiveScreenshotAnnotations,
+  takeScreenshot,
+} from './utils/screenshotController.js';
+import { devError } from './utils/devLogger.js';
 import { LAYOUT_MARGIN, LAYOUT_GAP, DEFAULT_BUTTON_COLOR, ICONS } from './constants.js';
 
 const LOG_PREFIX = '[flag-feedback]';
@@ -119,101 +124,25 @@ class FlagFeedback extends HTMLElement {
   }
 
   _saveActiveScreenshotAnnotations() {
-    if (this._activeScreenshotIdx >= 0 && this._activeScreenshotIdx < this._screenshots.length) {
-      this._screenshots[this._activeScreenshotIdx].shapes = this._annotator.getShapes();
-    }
+    saveActiveScreenshotAnnotations(this);
   }
 
   _renderScreenshots() {
-    renderScreenshotList(this._screenshotsList, this._screenshots, this._activeScreenshotIdx, {
-      onSelect: (i) => this._showScreenshot(i),
-      onRemove: (i) => this._removeScreenshot(i),
-    });
-  }
-
-  _showScreenshot(idx) {
-    if (idx < 0 || idx >= this._screenshots.length) return;
-    this._saveActiveScreenshotAnnotations();
-    this._activeScreenshotIdx = idx;
-    const s = this._screenshots[idx];
-    this._annotator.load(s.dataUrl).then(() => {
-      this._annotator.setShapes(s.shapes);
-    }).catch((err) => {
-      devWarn(LOG_PREFIX, 'Could not load screenshot for display:', err);
-    });
-    this._screenshotsList.querySelectorAll('.screenshot-thumb').forEach((thumb, i) => {
-      thumb.classList.toggle('active', i === idx);
-    });
+    renderScreenshots(this);
   }
 
   _showLastScreenshot() {
-    if (this._screenshots.length > 0) {
-      this._showScreenshot(this._screenshots.length - 1);
-    }
-  }
-
-  _removeScreenshot(idx) {
-    this._saveActiveScreenshotAnnotations();
-    this._screenshots.splice(idx, 1);
-    if (this._activeScreenshotIdx === idx) {
-      this._activeScreenshotIdx = this._screenshots.length - 1;
-      if (this._activeScreenshotIdx >= 0) {
-        const s = this._screenshots[this._activeScreenshotIdx];
-        this._annotator.load(s.dataUrl).then(() => {
-          this._annotator.setShapes(s.shapes);
-        }).catch((err) => {
-          devWarn(LOG_PREFIX, 'Could not load screenshot after remove:', err);
-        });
-        this._annCanvas.removeAttribute('hidden');
-        this._annToolbar.removeAttribute('hidden');
-      } else {
-        this._annCanvas.setAttribute('hidden', '');
-        this._annToolbar.setAttribute('hidden', '');
-      }
-    } else if (this._activeScreenshotIdx > idx) {
-      this._activeScreenshotIdx -= 1;
-    }
-    this._renderScreenshots();
-    this._updateScreenshotBtnLabel();
-    if (this._screenshots.length === 0) {
-      this._annCanvas.setAttribute('hidden', '');
-      this._annToolbar.setAttribute('hidden', '');
-    }
-  }
-
-  _updateScreenshotBtnLabel() {
-    const label = this._qs('.screenshot-btn-label');
-    if (label) label.textContent = this._screenshots.length > 0 ? 'Add another screenshot' : 'Add screenshot';
+    if (this._screenshots.length > 0) showScreenshot(this, this._screenshots.length - 1);
   }
 
   async _takeScreenshot() {
-    this._saveActiveScreenshotAnnotations();
-
-    this._panel.classList.add('capture-hidden');
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-    try {
-      const dataUrl = await captureScreenshot();
-      this._screenshots.push({ dataUrl, shapes: [] });
-
-      await this._annotator.load(dataUrl);
-      this._activeScreenshotIdx = this._screenshots.length - 1;
-
-      this._renderScreenshots();
-      this._annCanvas.removeAttribute('hidden');
-      this._annToolbar.removeAttribute('hidden');
-      this._updateScreenshotBtnLabel();
-    } catch (err) {
-      devWarn(LOG_PREFIX, 'Screenshot failed, continuing without it:', err);
-    } finally {
-      this._panel.classList.remove('capture-hidden');
-    }
+    await takeScreenshot(this);
   }
 
   async _submit() {
     await executeSubmitFlow(this, {
       setSubmitting: (active) => this._setSubmitting(active),
-      clearScreenshots: () => this._clearScreenshots(),
+      clearScreenshots: () => clearScreenshots(this),
       onSuccess: () => this._onSuccess(),
       showError: (msg) => this._showError(msg),
       hideError: () => this._hideError(),
@@ -227,25 +156,11 @@ class FlagFeedback extends HTMLElement {
     if (!active) this._hideError();
   }
 
-  _clearScreenshots() {
-    this._screenshots = [];
-    this._activeScreenshotIdx = -1;
-    this._annCanvas.setAttribute('hidden', '');
-    this._annToolbar.setAttribute('hidden', '');
-    this._screenshotsList.setAttribute('hidden', '');
-    this._screenshotsList.innerHTML = '';
-    this._updateScreenshotBtnLabel();
-    this._annToolbar.querySelectorAll('.tool-btn').forEach((b, i) => {
-      b.classList.toggle('active', i === 0);
-    });
-    this._annotator.setTool('rect');
-  }
-
   _onSuccess() {
     this._closePanel();
     this._recorder.reset();
     this._textarea.value = '';
-    this._clearScreenshots();
+    clearScreenshots(this);
     this._hideError();
 
     this._btn.classList.add('success');

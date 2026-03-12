@@ -1,6 +1,6 @@
 {
   "name": "flag-feedback",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Framework-agnostic vanilla JS Web Component for collecting structured user feedback",
   "type": "module",
   "main": "./dist/flag-feedback.umd.js",

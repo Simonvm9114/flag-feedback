@@ -14,6 +14,12 @@ export const DEFAULT_BUTTON_COLOR = '#6366F1';
 /** Maximum number of screenshots submitted per feedback. */
 export const MAX_SUBMIT_SCREENSHOTS = 5;
 
+/** Timeout in ms for feedback submission fetch requests. */
+export const FETCH_TIMEOUT_MS = 30_000;
+
+/** Annotation stroke color (e.g. rect, circle highlights). */
+export const ANNOTATION_STROKE_COLOR = '#ef4444';
+
 export const ICONS = {
   /** Chat bubble icon for the floating button. */
   chat: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,

@@ -3,7 +3,8 @@ import { nanoid } from 'nanoid';
 /**
  * Assembles the feedback package that is POSTed to the configured endpoint.
  */
-export function buildPackage({ appId, gitCommit, gitRepo, text, screenshot, interactions, recordingStart }) {
+export function buildPackage({ appId, gitCommit, gitRepo, text, screenshots, interactions, recordingStart }) {
+  const screenshotList = Array.isArray(screenshots) ? screenshots.filter(Boolean) : [];
   return {
     id: `fb_${nanoid()}`,
     timestamp: new Date().toISOString(),
@@ -22,7 +23,7 @@ export function buildPackage({ appId, gitCommit, gitRepo, text, screenshot, inte
     feedback: {
       text: text || '',
     },
-    screenshot:     screenshot     || null,
+    screenshots:    screenshotList,
     interactions:   interactions   || [],
     recordingStart: recordingStart || null,
   };

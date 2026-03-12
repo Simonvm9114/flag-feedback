@@ -1,5 +1,6 @@
 /**
  * Recorder — captures interaction events from the document.
+ * Uses a singleton so recording persists across widget unmounts (e.g. SPA navigation).
  *
  * Event schema (all events):
  *   { t: <unix ms>, type: <string>, path: <css path | undefined>, count: <n> }
@@ -13,6 +14,14 @@
  *  - Consecutive events of the same type + path are folded into one entry
  *    with an incrementing `count` field.
  */
+let _recorderInstance = null;
+
+/** Returns the shared Recorder instance used across widget lifecycle and navigation. */
+export function getRecorder() {
+  if (!_recorderInstance) _recorderInstance = new Recorder();
+  return _recorderInstance;
+}
+
 export class Recorder {
   constructor() {
     this._events = [];
@@ -22,12 +31,31 @@ export class Recorder {
     this._startTime = null;
   }
 
+  /** Starts a fresh recording. Clears any existing events. */
   start() {
     if (this._active) return;
     this._active = true;
     this._events = [];
     this._startTime = Date.now();
+    this._attachListeners();
+  }
 
+  /**
+   * Restores events and startTime from a previous page, then starts capturing.
+   * Used when the user navigated during recording (full page load).
+   */
+  hydrate(events, startTime) {
+    if (!Array.isArray(events)) return false;
+    if (this._active) return false;
+    this._active = true;
+    this._events = events.slice();
+    this._startTime = startTime ?? (events[0]?.t ?? null) ?? Date.now();
+    this._attachListeners();
+    return true;
+  }
+
+  /** Attaches document and window listeners for event capture. */
+  _attachListeners() {
     this._doc('click', (e) => {
       if (this._ignore(e.target)) return;
       this._push({ t: Date.now(), type: 'click', path: this._path(e.target) });
@@ -103,6 +131,7 @@ export class Recorder {
 
   get events() { return this._events.slice(); }
   get startTime() { return this._startTime; }
+  get isActive() { return this._active; }
 
   // ── Private ────────────────────────────────────────────
 

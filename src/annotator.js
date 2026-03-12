@@ -65,6 +65,17 @@ export class Annotator {
 
   get hasAnnotations() { return this._shapes.length > 0; }
 
+  /** Returns a copy of shapes for persistence. */
+  getShapes() {
+    return this._shapes.map((s) => ({ ...s, start: { ...s.start }, end: { ...s.end } }));
+  }
+
+  /** Restores shapes from persistence and redraws. */
+  setShapes(shapes) {
+    this._shapes = Array.isArray(shapes) ? shapes.map((s) => ({ ...s, start: { ...s.start }, end: { ...s.end } })) : [];
+    this._redraw(false);
+  }
+
   // ── Pointer handlers ───────────────────────────────────
 
   _down(e) {

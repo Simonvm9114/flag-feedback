@@ -1,5 +1,5 @@
 import { STYLES } from './styles.js';
-import { Recorder } from './recorder.js';
+import { getRecorder } from './recorder.js';
 import { Annotator } from './annotator.js';
 import { captureScreenshot } from './screenshot.js';
 import { buildPackage } from './package.js';
@@ -7,10 +7,34 @@ import { buildPackage } from './package.js';
 const VALID_POSITIONS = ['bottom-right', 'bottom-left', 'top-right', 'top-left'];
 const MARGIN = 16;
 const GAP = 8;
+const STORAGE_KEY = 'flag-feedback-state';
+
+/**
+ * Persists the given widget's state to sessionStorage.
+ * Used by disconnectedCallback (deferred) and pagehide/beforeunload (sync).
+ */
+function _persistWidgetState(widget) {
+  if (!widget || !widget._hasUnsavedState?.()) return;
+  try {
+    widget._saveActiveScreenshotAnnotations?.();
+    const data = {
+      text: widget._textarea?.value ?? '',
+      screenshots: (widget._screenshots ?? []).map((s) => ({ dataUrl: s.dataUrl, shapes: s.shapes ?? [] })),
+      isRecording: widget._isRecording ?? false,
+      recorderEvents: widget._isRecording ? widget._recorder?.events ?? [] : [],
+      recorderStartTime: widget._isRecording ? widget._recorder?.startTime ?? null : null,
+    };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn('[flag-feedback] Could not persist state:', e);
+  }
+}
 
 const ICON_CHAT = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
 const ICON_CHECK = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 const ICON_CAMERA = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
+const ICON_PLAY = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+const ICON_STOP = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
 
 class FlagFeedback extends HTMLElement {
   static get observedAttributes() {
@@ -20,9 +44,10 @@ class FlagFeedback extends HTMLElement {
   constructor() {
     super();
     this._root = this.attachShadow({ mode: 'open' });
-    this._recorder = new Recorder();
+    this._recorder = getRecorder();
     this._annotator = null;
-    this._screenshot = null; // raw data URL, set after capture
+    this._screenshots = []; // [{ dataUrl, shapes }] per screenshot
+    this._activeScreenshotIdx = -1;
     this._isOpen = false;
     this._isRecording = false;
   }
@@ -35,10 +60,16 @@ class FlagFeedback extends HTMLElement {
       return;
     }
     this._build();
+    this._restoreState();
   }
 
   disconnectedCallback() {
-    this._recorder.reset();
+    if (this._hasUnsavedState()) {
+      setTimeout(() => _persistWidgetState(this), 0);
+    }
+    if (!this._isRecording) {
+      this._recorder.reset();
+    }
   }
 
   attributeChangedCallback(name) {
@@ -81,14 +112,15 @@ class FlagFeedback extends HTMLElement {
     this._root.appendChild(this._panel);
 
     // Cache interactive elements
-    this._textarea      = this._qs('.fb-textarea');
-    this._recordToggle  = this._qs('.record-toggle');
-    this._screenshotBtn = this._qs('.screenshot-btn');
-    this._annToolbar    = this._qs('.ann-toolbar');
-    this._annCanvas     = this._qs('.screenshot-canvas');
-    this._submitBtn     = this._qs('.submit-btn');
-    this._errorEl       = this._qs('.fb-error');
-    this._closeBtn      = this._qs('.panel-close');
+    this._textarea       = this._qs('.fb-textarea');
+    this._recordPlayBtn  = this._qs('.record-play-btn');
+    this._screenshotBtn  = this._qs('.screenshot-btn');
+    this._screenshotsList = this._qs('.screenshots-list');
+    this._annToolbar     = this._qs('.ann-toolbar');
+    this._annCanvas      = this._qs('.screenshot-canvas');
+    this._submitBtn      = this._qs('.submit-btn');
+    this._errorEl        = this._qs('.fb-error');
+    this._closeBtn       = this._qs('.panel-close');
 
     // Annotator — canvas element passed in; no-op until load() is called
     this._annotator = new Annotator(this._annCanvas);
@@ -112,21 +144,20 @@ class FlagFeedback extends HTMLElement {
           aria-label="Describe the issue or feedback"
         ></textarea>
 
-        <label class="toggle-row">
-          <span class="switch">
-            <input type="checkbox" class="record-toggle" aria-label="Record my interactions">
-            <span class="track"></span>
-          </span>
-          <span class="toggle-info">
-            <strong>Record my interactions</strong>
+        <button class="record-play-btn" type="button" aria-label="Start recording my interactions">
+          <span class="record-play-icon">${ICON_PLAY}</span>
+          <span class="record-play-info">
+            <strong>Start recording</strong>
             <small>Captures clicks &amp; navigation from this point</small>
           </span>
-        </label>
+        </button>
 
         <button class="screenshot-btn" type="button">
           ${ICON_CAMERA}
-          <span class="screenshot-btn-label">Take screenshot</span>
+          <span class="screenshot-btn-label">Add screenshot</span>
         </button>
+
+        <div class="screenshots-list" hidden></div>
 
         <div class="ann-toolbar" hidden>
           <span class="ann-hint">Draw to highlight the problem area</span>
@@ -158,9 +189,7 @@ class FlagFeedback extends HTMLElement {
 
     this._closeBtn.addEventListener('click', () => this._closePanel());
 
-    this._recordToggle.addEventListener('change', () => {
-      this._recordToggle.checked ? this._startRecording() : this._stopRecording();
-    });
+    this._recordPlayBtn.addEventListener('click', () => this._startRecording());
 
     this._screenshotBtn.addEventListener('click', () => this._takeScreenshot());
 
@@ -195,37 +224,159 @@ class FlagFeedback extends HTMLElement {
     this._isRecording = true;
     this._recorder.start();
     this._panel.classList.remove('open');
+    this._btn.classList.add('recording-hidden');
     this._pill.classList.add('visible');
   }
 
   _stopRecording() {
     this._recorder.stop();
     this._isRecording = false;
+    this._btn.classList.remove('recording-hidden');
     this._pill.classList.remove('visible');
-    if (this._recordToggle) this._recordToggle.checked = false;
     this._openPanel();
+  }
+
+  _saveActiveScreenshotAnnotations() {
+    if (this._activeScreenshotIdx >= 0 && this._activeScreenshotIdx < this._screenshots.length) {
+      this._screenshots[this._activeScreenshotIdx].shapes = this._annotator.getShapes();
+    }
+  }
+
+  _renderScreenshotToDataUrl({ dataUrl, shapes }) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth;
+        c.height = img.naturalHeight;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        if (shapes && shapes.length > 0) {
+          const lw = Math.max(2, c.width / 400);
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = lw;
+          ctx.lineJoin = 'round';
+          for (const s of shapes) {
+            if (s.tool === 'rect') {
+              ctx.strokeRect(s.start.x, s.start.y, s.end.x - s.start.x, s.end.y - s.start.y);
+            } else {
+              const cx = (s.start.x + s.end.x) / 2;
+              const cy = (s.start.y + s.end.y) / 2;
+              const rx = Math.max(1, Math.abs(s.end.x - s.start.x) / 2);
+              const ry = Math.max(1, Math.abs(s.end.y - s.start.y) / 2);
+              ctx.beginPath();
+              ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+              ctx.stroke();
+            }
+          }
+        }
+        resolve(c.toDataURL('image/png'));
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  _renderScreenshots() {
+    if (this._screenshots.length === 0) {
+      this._screenshotsList.setAttribute('hidden', '');
+      this._screenshotsList.innerHTML = '';
+      return;
+    }
+    this._screenshotsList.removeAttribute('hidden');
+    this._screenshotsList.innerHTML = this._screenshots
+      .map(
+        (_, i) => `
+      <div class="screenshot-thumb ${i === this._activeScreenshotIdx ? 'active' : ''}" data-idx="${i}" title="Screenshot ${i + 1}">
+        <img src="${this._screenshots[i].dataUrl}" alt="Screenshot ${i + 1}">
+        <button type="button" class="screenshot-remove" aria-label="Remove screenshot">\u2715</button>
+      </div>
+    `
+      )
+      .join('');
+
+    this._screenshotsList.querySelectorAll('.screenshot-thumb').forEach((el) => {
+      const idx = parseInt(el.dataset.idx, 10);
+      el.querySelector('img').addEventListener('click', () => this._showScreenshot(idx));
+      el.querySelector('.screenshot-remove').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this._removeScreenshot(idx);
+      });
+    });
+  }
+
+  _showScreenshot(idx) {
+    if (idx < 0 || idx >= this._screenshots.length) return;
+    this._saveActiveScreenshotAnnotations();
+    this._activeScreenshotIdx = idx;
+    const s = this._screenshots[idx];
+    this._annotator.load(s.dataUrl).then(() => {
+      this._annotator.setShapes(s.shapes);
+    });
+    this._screenshotsList.querySelectorAll('.screenshot-thumb').forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === idx);
+    });
+  }
+
+  _showLastScreenshot() {
+    if (this._screenshots.length > 0) {
+      this._showScreenshot(this._screenshots.length - 1);
+    }
+  }
+
+  _removeScreenshot(idx) {
+    this._saveActiveScreenshotAnnotations();
+    this._screenshots.splice(idx, 1);
+    if (this._activeScreenshotIdx === idx) {
+      this._activeScreenshotIdx = this._screenshots.length - 1;
+      if (this._activeScreenshotIdx >= 0) {
+        const s = this._screenshots[this._activeScreenshotIdx];
+        this._annotator.load(s.dataUrl).then(() => {
+          this._annotator.setShapes(s.shapes);
+        });
+        this._annCanvas.removeAttribute('hidden');
+        this._annToolbar.removeAttribute('hidden');
+      } else {
+        this._annCanvas.setAttribute('hidden', '');
+        this._annToolbar.setAttribute('hidden', '');
+      }
+    } else if (this._activeScreenshotIdx > idx) {
+      this._activeScreenshotIdx -= 1;
+    }
+    this._renderScreenshots();
+    this._updateScreenshotBtnLabel();
+    if (this._screenshots.length === 0) {
+      this._annCanvas.setAttribute('hidden', '');
+      this._annToolbar.setAttribute('hidden', '');
+    }
+  }
+
+  _updateScreenshotBtnLabel() {
+    const label = this._qs('.screenshot-btn-label');
+    if (label) label.textContent = this._screenshots.length > 0 ? 'Add another screenshot' : 'Add screenshot';
   }
 
   // ── Screenshot + annotation ───────────────────────────
 
   async _takeScreenshot() {
+    this._saveActiveScreenshotAnnotations();
+
     this._panel.classList.add('capture-hidden');
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     try {
       const dataUrl = await captureScreenshot();
-      this._screenshot = dataUrl;
+      this._screenshots.push({ dataUrl, shapes: [] });
 
-      // Load into annotator (sizes canvas, draws image)
+      // Load into annotator and show
       await this._annotator.load(dataUrl);
+      this._activeScreenshotIdx = this._screenshots.length - 1;
 
-      // Show canvas and toolbar, update button label
+      this._renderScreenshots();
       this._annCanvas.removeAttribute('hidden');
       this._annToolbar.removeAttribute('hidden');
-      this._qs('.screenshot-btn-label').textContent = 'Retake screenshot';
+      this._updateScreenshotBtnLabel();
     } catch (err) {
       console.warn('[flag-feedback] Screenshot failed, continuing without it:', err);
-      this._screenshot = null;
     } finally {
       this._panel.classList.remove('capture-hidden');
     }
@@ -239,16 +390,22 @@ class FlagFeedback extends HTMLElement {
 
     this._setSubmitting(true);
 
-    // If a screenshot was taken, export the (possibly annotated) canvas, then clear it immediately
-    const screenshot = this._screenshot ? this._annotator.export() : null;
-    this._clearScreenshot();
+    this._saveActiveScreenshotAnnotations();
+    const screenshotPromises = this._screenshots.map((s, i) => {
+      if (i === this._activeScreenshotIdx) {
+        return Promise.resolve(this._annotator.export());
+      }
+      return this._renderScreenshotToDataUrl(s);
+    });
+    const screenshots = await Promise.all(screenshotPromises);
+    this._clearScreenshots();
 
     const pkg = buildPackage({
       appId:          this.getAttribute('app-id')    || null,
       gitCommit:      this.getAttribute('git-commit') || null,
       gitRepo:        this.getAttribute('git-repo')   || null,
       text:           this._textarea.value,
-      screenshot,
+      screenshots,
       interactions:   this._recorder.events,
       recordingStart: this._recorder.startTime,
     });
@@ -276,11 +433,14 @@ class FlagFeedback extends HTMLElement {
     if (!active) this._hideError();
   }
 
-  _clearScreenshot() {
-    this._screenshot = null;
+  _clearScreenshots() {
+    this._screenshots = [];
+    this._activeScreenshotIdx = -1;
     this._annCanvas.setAttribute('hidden', '');
     this._annToolbar.setAttribute('hidden', '');
-    this._qs('.screenshot-btn-label').textContent = 'Take screenshot';
+    this._screenshotsList.setAttribute('hidden', '');
+    this._screenshotsList.innerHTML = '';
+    this._updateScreenshotBtnLabel();
     this._annToolbar.querySelectorAll('.tool-btn').forEach((b, i) => {
       b.classList.toggle('active', i === 0);
     });
@@ -291,7 +451,7 @@ class FlagFeedback extends HTMLElement {
     this._closePanel();
     this._recorder.reset();
     this._textarea.value = '';
-    this._clearScreenshot();
+    this._clearScreenshots();
     this._hideError();
 
     // Brief success indicator on floating button
@@ -339,6 +499,53 @@ class FlagFeedback extends HTMLElement {
     this.style.setProperty('--fw-color', color);
   }
 
+  // ── State persistence (SPA navigation) ─────────────────
+
+  _hasUnsavedState() {
+    return (
+      this._isRecording ||
+      (this._textarea && this._textarea.value.trim()) ||
+      this._screenshots.length > 0
+    );
+  }
+
+  _persistState() {
+    _persistWidgetState(this);
+  }
+
+  _restoreState() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      const data = JSON.parse(raw);
+      sessionStorage.removeItem(STORAGE_KEY);
+
+      if (data.text && this._textarea) this._textarea.value = data.text;
+      if (Array.isArray(data.screenshots) && data.screenshots.length > 0) {
+        this._screenshots = data.screenshots.map((s) => ({
+          dataUrl: s.dataUrl,
+          shapes: s.shapes ?? [],
+        }));
+        this._renderScreenshots();
+        this._showLastScreenshot();
+      }
+      if (data.isRecording) {
+        const hadRecorderData = Array.isArray(data.recorderEvents) && data.recorderStartTime != null;
+        const resumed = hadRecorderData
+          ? this._recorder.hydrate(data.recorderEvents, data.recorderStartTime)
+          : this._recorder.isActive;
+        if (resumed) {
+          this._isRecording = true;
+          this._btn?.classList.add('recording-hidden');
+          this._pill?.classList.add('visible');
+        }
+      }
+    } catch (e) {
+      console.warn('[flag-feedback] Could not restore state:', e);
+    }
+  }
+
   // ── Utility ───────────────────────────────────────────
 
   _qs(selector) {
@@ -349,3 +556,11 @@ class FlagFeedback extends HTMLElement {
 if (!customElements.get('flag-feedback')) {
   customElements.define('flag-feedback', FlagFeedback);
 }
+
+/** Sync persist on full page unload (MPA navigation). disconnectedCallback is unreliable then. */
+function _persistOnUnload() {
+  const widget = document.querySelector('flag-feedback');
+  _persistWidgetState(widget);
+}
+window.addEventListener('pagehide', _persistOnUnload);
+window.addEventListener('beforeunload', _persistOnUnload);

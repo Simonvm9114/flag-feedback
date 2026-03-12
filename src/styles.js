@@ -30,6 +30,7 @@ export const STYLES = `
   .fb-btn:hover { transform: scale(1.08); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28); }
   .fb-btn:active { transform: scale(0.96); }
   .fb-btn.success { background: #22c55e !important; }
+  .fb-btn.recording-hidden { display: none; }
 
   /* ── Recording pill ──────────────────────────────────── */
   .fb-pill {
@@ -159,8 +160,8 @@ export const STYLES = `
     background: #fff;
   }
 
-  /* ── Record toggle ───────────────────────────────────── */
-  .toggle-row {
+  /* ── Record play button ───────────────────────────────── */
+  .record-play-btn {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -168,54 +169,39 @@ export const STYLES = `
     padding: 10px 12px;
     border: 1.5px solid #e0e0e0;
     border-radius: 8px;
-    transition: background 0.15s;
+    background: transparent;
+    transition: background 0.15s, border-color 0.15s;
     user-select: none;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: inherit;
   }
 
-  .toggle-row:hover { background: #f9f9fc; }
+  .record-play-btn:hover {
+    background: #f9f9fc;
+    border-color: var(--fw-color, #6366F1);
+  }
 
-  .switch {
-    position: relative;
+  .record-play-icon {
     width: 40px;
-    height: 22px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    position: absolute;
-  }
-
-  .track {
-    position: absolute;
-    inset: 0;
-    background: #d1d5db;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .track::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fw-color, #6366F1);
+    color: #fff;
     border-radius: 50%;
-    background: #fff;
-    top: 3px;
-    left: 3px;
-    transition: transform 0.2s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
   }
 
-  .switch input:checked + .track { background: var(--fw-color, #6366F1); }
-  .switch input:checked + .track::after { transform: translateX(18px); }
+  .record-play-btn:hover .record-play-icon {
+    background: #4f46e5;
+  }
 
-  .toggle-info strong { display: block; font-weight: 500; font-size: 14px; color: #111; }
-  .toggle-info small { color: #888; font-size: 12px; }
+  .record-play-info strong { display: block; font-weight: 500; font-size: 14px; color: #111; }
+  .record-play-info small { color: #888; font-size: 12px; }
 
   /* ── Screenshot button ───────────────────────────────── */
   .screenshot-btn {
@@ -237,6 +223,71 @@ export const STYLES = `
   .screenshot-btn:hover {
     border-color: var(--fw-color, #6366F1);
     background: #f5f4ff;
+  }
+
+  /* ── Screenshots list (thumbnails) ────────────────────── */
+  .screenshots-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .screenshot-thumb {
+    position: relative;
+    width: 64px;
+    height: 48px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .screenshot-thumb:hover {
+    border-color: var(--fw-color, #6366F1);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+  }
+
+  .screenshot-thumb.active {
+    border-color: var(--fw-color, #6366F1);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  }
+
+  .screenshot-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .screenshot-thumb .screenshot-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .screenshot-thumb:hover .screenshot-remove {
+    opacity: 1;
+  }
+
+  .screenshot-thumb .screenshot-remove:hover {
+    background: #dc2626;
   }
 
   /* ── Annotation toolbar ──────────────────────────────── */

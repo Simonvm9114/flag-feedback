@@ -3,7 +3,10 @@
  * and validation of restored data.
  */
 
+import { devWarn } from './devLogger.js';
+
 const STORAGE_KEY = 'flag-feedback-state';
+const LOG_PREFIX = '[flag-feedback]';
 
 /** Regex for valid screenshot data URLs (PNG/JPEG/WebP base64). */
 const DATA_URL_REGEX = /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
@@ -55,7 +58,7 @@ export function persist(state) {
   try {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
-    console.warn('[flag-feedback] Could not persist state:', e);
+    devWarn(LOG_PREFIX, 'Could not persist state:', e);
   }
 }
 
@@ -71,7 +74,7 @@ export function restore() {
     const parsed = JSON.parse(raw);
     return validateRestoredState(parsed);
   } catch (e) {
-    console.warn('[flag-feedback] Could not restore state:', e);
+    devWarn(LOG_PREFIX, 'Could not restore state:', e);
     return null;
   }
 }

@@ -14,6 +14,8 @@
  *  - Consecutive events of the same type + path are folded into one entry
  *    with an incrementing `count` field.
  */
+import { devWarn } from './utils/devLogger.js';
+
 let _recorderInstance = null;
 
 /**
@@ -143,10 +145,8 @@ export class Recorder {
 
   _doc(type, fn) {
     const h = (e) => {
-      try { fn(e); } catch (err) {
-        if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
-          console.warn('[flag-feedback] Recorder handler error:', err);
-        }
+      try { fn(e);       } catch (err) {
+        devWarn('[flag-feedback]', 'Recorder handler error:', err);
       }
     };
     document.addEventListener(type, h, true);
@@ -156,9 +156,7 @@ export class Recorder {
   _win(type, fn) {
     const h = (e) => {
       try { fn(e); } catch (err) {
-        if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
-          console.warn('[flag-feedback] Recorder handler error:', err);
-        }
+        devWarn('[flag-feedback]', 'Recorder handler error:', err);
       }
     };
     window.addEventListener(type, h);

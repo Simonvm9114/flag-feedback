@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
+import { MAX_SUBMIT_SCREENSHOTS } from './constants.js';
 
 const MAX_TEXT_LENGTH = 10_000;
-const MAX_SCREENSHOTS = 5;
 
 /**
  * @typedef {Object} BuildPackageOptions
@@ -23,7 +23,7 @@ const MAX_SCREENSHOTS = 5;
 export function buildPackage({ appId, gitCommit, gitRepo, text, screenshots, interactions, recordingStart }) {
   const trimmedText = typeof text === 'string' ? text.slice(0, MAX_TEXT_LENGTH) : '';
   const screenshotList = Array.isArray(screenshots)
-    ? screenshots.filter(Boolean).slice(0, MAX_SCREENSHOTS)
+    ? screenshots.filter(Boolean).slice(0, MAX_SUBMIT_SCREENSHOTS)
     : [];
   return {
     id: `fb_${nanoid()}`,

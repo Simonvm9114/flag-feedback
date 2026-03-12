@@ -22,6 +22,10 @@ export function getPanelTemplate(icons) {
           <small>Captures clicks &amp; navigation from this point</small>
         </span>
       </button>
+      <div class="interactions-row" hidden>
+        <p class="interactions-count" aria-live="polite"></p>
+        <button class="reset-recording-btn" type="button" aria-label="Clear recorded interactions">Reset</button>
+      </div>
       <button class="screenshot-btn" type="button">
         ${icons.camera}
         <span class="screenshot-btn-label">Add screenshot</span>

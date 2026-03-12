@@ -135,6 +135,41 @@ export const STYLES_PANEL = `
   .record-play-info strong { display: block; font-weight: 500; font-size: 14px; color: #111; }
   .record-play-info small { color: #888; font-size: 12px; }
 
+  /* ── Interactions row (counter + reset) ───────────────────── */
+  .interactions-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .interactions-row[hidden] { display: none; }
+
+  .interactions-count {
+    margin: 0;
+    font-size: 13px;
+    color: #059669;
+    flex: 1;
+  }
+
+  .reset-recording-btn {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    color: #666;
+    background: transparent;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .reset-recording-btn:hover {
+    color: #333;
+    border-color: #bbb;
+  }
+
   /* ── Screenshot button ───────────────────────────────── */
   .screenshot-btn {
     display: flex;

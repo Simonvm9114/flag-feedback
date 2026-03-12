@@ -15,6 +15,7 @@ export function bindWidgetEvents(widget) {
   widget._pill.addEventListener('click', () => widget._stopRecording());
   widget._closeBtn.addEventListener('click', () => widget._closePanel());
   widget._recordPlayBtn.addEventListener('click', () => widget._startRecording());
+  widget._resetRecordingBtn?.addEventListener('click', () => widget._resetRecording());
   widget._screenshotBtn.addEventListener('click', () => widget._takeScreenshot());
 
   widget._annToolbar.querySelectorAll('.tool-btn').forEach((btn) => {

@@ -36,12 +36,13 @@ export class Recorder {
     this._startTime = null;
   }
 
-  /** Starts a fresh recording. Clears any existing events. */
+  /** Starts or resumes recording. Resumes (appends) when events exist; clears only on explicit reset. */
   start() {
     if (this._active) return;
     this._active = true;
-    this._events = [];
-    this._startTime = Date.now();
+    if (this._events.length === 0) {
+      this._startTime = Date.now();
+    }
     this._attachListeners();
   }
 
@@ -140,6 +141,11 @@ export class Recorder {
   get events() { return this._events.slice(); }
   get startTime() { return this._startTime; }
   get isActive() { return this._active; }
+
+  /** Total number of interactions recorded (sum of deduplicated event counts). */
+  getInteractionCount() {
+    return this._events.reduce((sum, e) => sum + (e.count ?? 1), 0);
+  }
 
   // ── Private ────────────────────────────────────────────
 

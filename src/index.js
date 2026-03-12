@@ -74,7 +74,27 @@ class FlagFeedback extends HTMLElement {
   _openPanel() {
     this._isOpen = true;
     this._panel.classList.add('open');
+    this._updateInteractionsCount();
     setTimeout(() => this._textarea?.focus(), 220);
+  }
+
+  _resetRecording() {
+    this._recorder.reset();
+    this._updateInteractionsCount();
+  }
+
+  _updateInteractionsCount() {
+    const row = this._interactionsRow;
+    const countEl = this._interactionsCount;
+    if (!row || !countEl) return;
+    const count = this._recorder.getInteractionCount();
+    if (count > 0) {
+      countEl.textContent = count === 1 ? '1 interaction recorded' : `${count} interactions recorded`;
+      row.removeAttribute('hidden');
+    } else {
+      countEl.textContent = '';
+      row.setAttribute('hidden', '');
+    }
   }
 
   _closePanel() {

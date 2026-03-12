@@ -40,6 +40,9 @@ export function buildWidgetDOM(widget) {
 
   widget._textarea = root.querySelector('.fb-textarea');
   widget._recordPlayBtn = root.querySelector('.record-play-btn');
+  widget._interactionsRow = root.querySelector('.interactions-row');
+  widget._interactionsCount = root.querySelector('.interactions-count');
+  widget._resetRecordingBtn = root.querySelector('.reset-recording-btn');
   widget._screenshotBtn = root.querySelector('.screenshot-btn');
   widget._screenshotsList = root.querySelector('.screenshots-list');
   widget._annToolbar = root.querySelector('.ann-toolbar');

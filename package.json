@@ -17,7 +17,8 @@
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "lint": "eslint src"
   },
   "keywords": [
     "feedback",
@@ -31,6 +32,8 @@
     "nanoid": "^5.0.9"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.3",
     "vite": "^7.3.1"
   }
 }

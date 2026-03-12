@@ -3,11 +3,38 @@ import { getRecorder } from './recorder.js';
 import { Annotator } from './annotator.js';
 import { captureScreenshot } from './screenshot.js';
 import { buildPackage } from './package.js';
+import { loadImage } from './utils/imageLoader.js';
+import { drawShapesOnContext } from './utils/shapeRenderer.js';
+import { persist as persistState, restore as restoreState, isValidDataUrl } from './utils/statePersistence.js';
+import { submit as submitFeedback } from './utils/feedbackSubmitter.js';
+import { applyPosition } from './utils/positionManager.js';
 
-const VALID_POSITIONS = ['bottom-right', 'bottom-left', 'top-right', 'top-left'];
 const MARGIN = 16;
 const GAP = 8;
-const STORAGE_KEY = 'flag-feedback-state';
+
+/**
+ * Validates that a URL is safe for fetch (https or http for localhost only).
+ * @param {string} url - The endpoint URL to validate.
+ * @returns {boolean} True if valid.
+ */
+function _validateEndpoint(url) {
+  if (!url || typeof url !== 'string' || !url.trim()) return false;
+  try {
+    const u = new URL(url.trim());
+    const protocol = u.protocol.toLowerCase();
+    if (protocol === 'javascript:' || protocol === 'data:' || protocol === 'blob:' || protocol === 'file:') {
+      return false;
+    }
+    if (protocol === 'https:') return true;
+    if (protocol === 'http:') {
+      const host = u.hostname.toLowerCase();
+      return host === 'localhost' || host === '127.0.0.1' || host.startsWith('127.');
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Persists the given widget's state to sessionStorage.
@@ -15,27 +42,21 @@ const STORAGE_KEY = 'flag-feedback-state';
  */
 function _persistWidgetState(widget) {
   if (!widget || !widget._hasUnsavedState?.()) return;
-  try {
-    widget._saveActiveScreenshotAnnotations?.();
-    const data = {
-      text: widget._textarea?.value ?? '',
-      screenshots: (widget._screenshots ?? []).map((s) => ({ dataUrl: s.dataUrl, shapes: s.shapes ?? [] })),
-      isRecording: widget._isRecording ?? false,
-      recorderEvents: widget._isRecording ? widget._recorder?.events ?? [] : [],
-      recorderStartTime: widget._isRecording ? widget._recorder?.startTime ?? null : null,
-    };
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.warn('[flag-feedback] Could not persist state:', e);
-  }
+  widget._saveActiveScreenshotAnnotations?.();
+  const state = {
+    text: widget._textarea?.value ?? '',
+    screenshots: (widget._screenshots ?? []).map((s) => ({ dataUrl: s.dataUrl, shapes: s.shapes ?? [] })),
+    isRecording: widget._isRecording ?? false,
+    recorderEvents: widget._isRecording ? widget._recorder?.events ?? [] : [],
+    recorderStartTime: widget._isRecording ? widget._recorder?.startTime ?? null : null,
+  };
+  persistState(state);
 }
 
 const ICON_CHAT = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
 const ICON_CHECK = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
 const ICON_CAMERA = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
 const ICON_PLAY = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
-const ICON_STOP = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>`;
-
 class FlagFeedback extends HTMLElement {
   static get observedAttributes() {
     return ['endpoint', 'app-id', 'git-commit', 'git-repo', 'position', 'button-color', 'button-label'];
@@ -55,8 +76,9 @@ class FlagFeedback extends HTMLElement {
   // ── Lifecycle ─────────────────────────────────────────
 
   connectedCallback() {
-    if (!this.getAttribute('endpoint')) {
-      console.error('[flag-feedback] Missing required attribute: endpoint. Widget will not render.');
+    const endpoint = this.getAttribute('endpoint');
+    if (!_validateEndpoint(endpoint)) {
+      console.error('[flag-feedback] Missing or invalid endpoint attribute (must be https or http for localhost). Widget will not render.');
       return;
     }
     this._build();
@@ -242,38 +264,15 @@ class FlagFeedback extends HTMLElement {
     }
   }
 
-  _renderScreenshotToDataUrl({ dataUrl, shapes }) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        const c = document.createElement('canvas');
-        c.width = img.naturalWidth;
-        c.height = img.naturalHeight;
-        const ctx = c.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        if (shapes && shapes.length > 0) {
-          const lw = Math.max(2, c.width / 400);
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = lw;
-          ctx.lineJoin = 'round';
-          for (const s of shapes) {
-            if (s.tool === 'rect') {
-              ctx.strokeRect(s.start.x, s.start.y, s.end.x - s.start.x, s.end.y - s.start.y);
-            } else {
-              const cx = (s.start.x + s.end.x) / 2;
-              const cy = (s.start.y + s.end.y) / 2;
-              const rx = Math.max(1, Math.abs(s.end.x - s.start.x) / 2);
-              const ry = Math.max(1, Math.abs(s.end.y - s.start.y) / 2);
-              ctx.beginPath();
-              ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-              ctx.stroke();
-            }
-          }
-        }
-        resolve(c.toDataURL('image/png'));
-      };
-      img.src = dataUrl;
-    });
+  async _renderScreenshotToDataUrl({ dataUrl, shapes }) {
+    const img = await loadImage(dataUrl);
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    drawShapesOnContext(ctx, shapes || [], c.width);
+    return c.toDataURL('image/png');
   }
 
   _renderScreenshots() {
@@ -283,23 +282,33 @@ class FlagFeedback extends HTMLElement {
       return;
     }
     this._screenshotsList.removeAttribute('hidden');
-    this._screenshotsList.innerHTML = this._screenshots
-      .map(
-        (_, i) => `
-      <div class="screenshot-thumb ${i === this._activeScreenshotIdx ? 'active' : ''}" data-idx="${i}" title="Screenshot ${i + 1}">
-        <img src="${this._screenshots[i].dataUrl}" alt="Screenshot ${i + 1}">
-        <button type="button" class="screenshot-remove" aria-label="Remove screenshot">\u2715</button>
-      </div>
-    `
-      )
-      .join('');
+    this._screenshotsList.innerHTML = '';
 
-    this._screenshotsList.querySelectorAll('.screenshot-thumb').forEach((el) => {
-      const idx = parseInt(el.dataset.idx, 10);
-      el.querySelector('img').addEventListener('click', () => this._showScreenshot(idx));
-      el.querySelector('.screenshot-remove').addEventListener('click', (e) => {
+    this._screenshots.forEach((s, i) => {
+      if (!isValidDataUrl(s.dataUrl)) return;
+      const thumb = document.createElement('div');
+      thumb.className = `screenshot-thumb${i === this._activeScreenshotIdx ? ' active' : ''}`;
+      thumb.dataset.idx = String(i);
+      thumb.title = `Screenshot ${i + 1}`;
+
+      const img = document.createElement('img');
+      img.src = s.dataUrl;
+      img.alt = `Screenshot ${i + 1}`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'screenshot-remove';
+      removeBtn.setAttribute('aria-label', 'Remove screenshot');
+      removeBtn.textContent = '\u2715';
+
+      thumb.appendChild(img);
+      thumb.appendChild(removeBtn);
+      this._screenshotsList.appendChild(thumb);
+
+      img.addEventListener('click', () => this._showScreenshot(i));
+      removeBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        this._removeScreenshot(idx);
+        this._removeScreenshot(i);
       });
     });
   }
@@ -311,6 +320,8 @@ class FlagFeedback extends HTMLElement {
     const s = this._screenshots[idx];
     this._annotator.load(s.dataUrl).then(() => {
       this._annotator.setShapes(s.shapes);
+    }).catch((err) => {
+      console.warn('[flag-feedback] Could not load screenshot for display:', err);
     });
     this._screenshotsList.querySelectorAll('.screenshot-thumb').forEach((thumb, i) => {
       thumb.classList.toggle('active', i === idx);
@@ -332,6 +343,8 @@ class FlagFeedback extends HTMLElement {
         const s = this._screenshots[this._activeScreenshotIdx];
         this._annotator.load(s.dataUrl).then(() => {
           this._annotator.setShapes(s.shapes);
+        }).catch((err) => {
+          console.warn('[flag-feedback] Could not load screenshot after remove:', err);
         });
         this._annCanvas.removeAttribute('hidden');
         this._annToolbar.removeAttribute('hidden');
@@ -386,13 +399,18 @@ class FlagFeedback extends HTMLElement {
 
   async _submit() {
     const endpoint = this.getAttribute('endpoint');
-    if (!endpoint) return;
+    if (!_validateEndpoint(endpoint)) return;
 
     this._setSubmitting(true);
 
     this._saveActiveScreenshotAnnotations();
-    const screenshotPromises = this._screenshots.map((s, i) => {
-      if (i === this._activeScreenshotIdx) {
+    const screenshotsToSubmit = this._screenshots.slice(0, 5);
+    if (this._screenshots.length > 5) {
+      console.warn('[flag-feedback] Only the first 5 screenshots will be submitted.');
+    }
+    const screenshotPromises = screenshotsToSubmit.map((s) => {
+      const realIdx = this._screenshots.indexOf(s);
+      if (realIdx === this._activeScreenshotIdx) {
         return Promise.resolve(this._annotator.export());
       }
       return this._renderScreenshotToDataUrl(s);
@@ -411,17 +429,10 @@ class FlagFeedback extends HTMLElement {
     });
 
     try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(pkg),
-      });
-
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-
+      await submitFeedback(endpoint, pkg);
       this._onSuccess();
     } catch (err) {
-      this._showError(`Submission failed: ${err.message}. Please try again.`);
+      this._showError(err.message);
     } finally {
       this._setSubmitting(false);
     }
@@ -476,22 +487,11 @@ class FlagFeedback extends HTMLElement {
   // ── Positioning & colour ──────────────────────────────
 
   _applyPositions() {
-    const pos = VALID_POSITIONS.includes(this.getAttribute('position'))
-      ? this.getAttribute('position')
-      : 'bottom-right';
-
-    const [v, h] = pos.split('-');
-    const oppV = v === 'top' ? 'bottom' : 'top';
-    const oppH = h === 'left' ? 'right' : 'left';
-
-    const btnSize = window.innerWidth <= 500 ? 56 : 48;
-    const m = `${MARGIN}px`;
-    const panelOffset = `${btnSize + MARGIN + GAP}px`;
-
-    Object.assign(this._btn.style,   { [v]: m,           [oppV]: '', [h]: m, [oppH]: '' });
-    Object.assign(this._panel.style, { [v]: panelOffset, [oppV]: '', [h]: m, [oppH]: '',
-      transformOrigin: `${v} ${h}` });
-    Object.assign(this._pill.style,  { [v]: m,           [oppV]: '', [h]: m, [oppH]: '' });
+    applyPosition(
+      { btn: this._btn, panel: this._panel, pill: this._pill },
+      this.getAttribute('position') || 'bottom-right',
+      { margin: MARGIN, gap: GAP }
+    );
   }
 
   _applyColor() {
@@ -514,35 +514,25 @@ class FlagFeedback extends HTMLElement {
   }
 
   _restoreState() {
-    try {
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+    const data = restoreState();
+    if (!data) return;
 
-      const data = JSON.parse(raw);
-      sessionStorage.removeItem(STORAGE_KEY);
-
-      if (data.text && this._textarea) this._textarea.value = data.text;
-      if (Array.isArray(data.screenshots) && data.screenshots.length > 0) {
-        this._screenshots = data.screenshots.map((s) => ({
-          dataUrl: s.dataUrl,
-          shapes: s.shapes ?? [],
-        }));
-        this._renderScreenshots();
-        this._showLastScreenshot();
+    if (data.text && this._textarea) this._textarea.value = data.text;
+    if (data.screenshots.length > 0) {
+      this._screenshots = data.screenshots;
+      this._renderScreenshots();
+      this._showLastScreenshot();
+    }
+    if (data.isRecording) {
+      const hadRecorderData = data.recorderEvents.length > 0 && data.recorderStartTime != null;
+      const resumed = hadRecorderData
+        ? this._recorder.hydrate(data.recorderEvents, data.recorderStartTime)
+        : this._recorder.isActive;
+      if (resumed) {
+        this._isRecording = true;
+        this._btn?.classList.add('recording-hidden');
+        this._pill?.classList.add('visible');
       }
-      if (data.isRecording) {
-        const hadRecorderData = Array.isArray(data.recorderEvents) && data.recorderStartTime != null;
-        const resumed = hadRecorderData
-          ? this._recorder.hydrate(data.recorderEvents, data.recorderStartTime)
-          : this._recorder.isActive;
-        if (resumed) {
-          this._isRecording = true;
-          this._btn?.classList.add('recording-hidden');
-          this._pill?.classList.add('visible');
-        }
-      }
-    } catch (e) {
-      console.warn('[flag-feedback] Could not restore state:', e);
     }
   }
 

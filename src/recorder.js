@@ -16,7 +16,10 @@
  */
 let _recorderInstance = null;
 
-/** Returns the shared Recorder instance used across widget lifecycle and navigation. */
+/**
+ * Returns the shared Recorder instance used across widget lifecycle and navigation.
+ * @returns {Recorder}
+ */
 export function getRecorder() {
   if (!_recorderInstance) _recorderInstance = new Recorder();
   return _recorderInstance;
@@ -43,6 +46,9 @@ export class Recorder {
   /**
    * Restores events and startTime from a previous page, then starts capturing.
    * Used when the user navigated during recording (full page load).
+   * @param {Array} events - Event array from persisted state.
+   * @param {number|null} startTime - Recording start timestamp.
+   * @returns {boolean} True if hydration succeeded.
    */
   hydrate(events, startTime) {
     if (!Array.isArray(events)) return false;
@@ -136,13 +142,25 @@ export class Recorder {
   // ── Private ────────────────────────────────────────────
 
   _doc(type, fn) {
-    const h = (e) => { try { fn(e); } catch { /* skip */ } };
+    const h = (e) => {
+      try { fn(e); } catch (err) {
+        if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
+          console.warn('[flag-feedback] Recorder handler error:', err);
+        }
+      }
+    };
     document.addEventListener(type, h, true);
     this._docHandlers.set(type, h);
   }
 
   _win(type, fn) {
-    const h = (e) => { try { fn(e); } catch { /* skip */ } };
+    const h = (e) => {
+      try { fn(e); } catch (err) {
+        if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
+          console.warn('[flag-feedback] Recorder handler error:', err);
+        }
+      }
+    };
     window.addEventListener(type, h);
     this._winHandlers.set(type, h);
   }

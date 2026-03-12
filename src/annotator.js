@@ -1,3 +1,6 @@
+import { loadImage } from './utils/imageLoader.js';
+import { drawShapesOnContext, strokeLineWidth } from './utils/shapeRenderer.js';
+
 /**
  * Annotator — loads a screenshot into a <canvas> and lets the user draw
  * rectangle or circle annotations on top of it.
@@ -24,7 +27,7 @@ export class Annotator {
     canvas.addEventListener('mousedown', (e) => this._down(e));
     canvas.addEventListener('mousemove', (e) => this._move(e));
     canvas.addEventListener('mouseup',   (e) => this._up(e));
-    canvas.addEventListener('mouseleave',(e) => this._cancel());
+    canvas.addEventListener('mouseleave', () => this._cancel());
 
     // Touch (passive: false so we can preventDefault and block scroll)
     canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this._down(e.touches[0]); },      { passive: false });
@@ -35,19 +38,16 @@ export class Annotator {
   /**
    * Load a screenshot data URL into the canvas.
    * Sets canvas intrinsic size to match the image so exports are full-res.
+   * @param {string} dataUrl - Data URL (e.g. data:image/png;base64,...).
+   * @returns {Promise<void>}
    */
   load(dataUrl) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        this._img = img;
-        this._shapes = [];
-        this._canvas.width  = img.naturalWidth;
-        this._canvas.height = img.naturalHeight;
-        this._redraw();
-        resolve();
-      };
-      img.src = dataUrl;
+    return loadImage(dataUrl).then((img) => {
+      this._img = img;
+      this._shapes = [];
+      this._canvas.width  = img.naturalWidth;
+      this._canvas.height = img.naturalHeight;
+      this._redraw();
     });
   }
 
@@ -58,7 +58,10 @@ export class Annotator {
     this._redraw();
   }
 
-  /** Returns a data URL of the canvas with annotations burned in. */
+  /**
+   * Returns a data URL of the canvas with annotations burned in.
+   * @returns {string}
+   */
   export() {
     return this._canvas.toDataURL('image/png');
   }
@@ -70,7 +73,10 @@ export class Annotator {
     return this._shapes.map((s) => ({ ...s, start: { ...s.start }, end: { ...s.end } }));
   }
 
-  /** Restores shapes from persistence and redraws. */
+  /**
+   * Restores shapes from persistence and redraws.
+   * @param {Array<{ tool: string, start: { x: number, y: number }, end: { x: number, y: number } }>} shapes
+   */
   setShapes(shapes) {
     this._shapes = Array.isArray(shapes) ? shapes.map((s) => ({ ...s, start: { ...s.start }, end: { ...s.end } })) : [];
     this._redraw(false);
@@ -119,39 +125,14 @@ export class Annotator {
     ctx.clearRect(0, 0, width, height);
     if (this._img) ctx.drawImage(this._img, 0, 0);
 
-    // Line style — scale thickness relative to image width so it looks right
-    // at any capture resolution
-    const lw = Math.max(2, width / 400);
-    ctx.save();
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth   = lw;
-    ctx.lineJoin    = 'round';
-
-    for (const s of this._shapes) {
-      ctx.setLineDash([]);
-      this._drawShape(s.tool, s.start, s.end);
-    }
+    const lw = strokeLineWidth(width);
+    drawShapesOnContext(ctx, this._shapes, width);
 
     if (withLive && this._start && this._live) {
-      ctx.setLineDash([Math.round(lw * 4), Math.round(lw * 2)]);
-      this._drawShape(this._tool, this._start, this._live);
-    }
-
-    ctx.restore();
-  }
-
-  _drawShape(tool, start, end) {
-    const ctx = this._ctx;
-    if (tool === 'rect') {
-      ctx.strokeRect(start.x, start.y, end.x - start.x, end.y - start.y);
-    } else {
-      const cx = (start.x + end.x) / 2;
-      const cy = (start.y + end.y) / 2;
-      const rx = Math.max(1, Math.abs(end.x - start.x) / 2);
-      const ry = Math.max(1, Math.abs(end.y - start.y) / 2);
-      ctx.beginPath();
-      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-      ctx.stroke();
+      const liveShape = { tool: this._tool, start: this._start, end: this._live };
+      drawShapesOnContext(ctx, [liveShape], width, {
+        lineDash: [Math.round(lw * 4), Math.round(lw * 2)],
+      });
     }
   }
 

@@ -1,0 +1,15 @@
+# MVP — Out of Scope
+
+The following items are explicitly excluded from the MVP. Before implementing any feature, verify it does not appear in this list. If it does, stop and confirm with the developer before proceeding.
+
+| Item | Reason / Deferral Note |
+|------|------------------------|
+| Screenshot capture | Removed from the experiment due to high AI token cost at the receiving end relative to its value. May be reconsidered in a future version once a lower-cost approach is identified. |
+| Real-time click interception during recording (comment-or-continue dialogue) | The more ambitious flow where every click during a recording session prompts the user to annotate or continue is deferred. Element-targeting mode covers the element-level annotation use case for the MVP. |
+| Backend / server implementation | The package is client-side only. It POSTs a JSON payload to a developer-configured endpoint; the receiving server, database, and any processing pipeline are outside the scope of this package. |
+| Built-in authentication or access control | Controlling which users of a host application have access to the widget is entirely the host application's responsibility. The package ships no user identity, session management, or access tier logic. |
+| Framework-specific bindings (React, Vue, Angular, Svelte, etc.) | The MVP ships as a vanilla JS / Web Component. Framework wrappers are deferred to a future release. |
+| Offline support | There is no requirement for the package to function without a network connection. Submissions that fail due to network unavailability are handled as standard submission errors. |
+| Multiple simultaneous activator instances with shared state | No requirement has been identified for multiple activator instances to share a single feedback session state. |
+| Multilingual UI | The feedback panel UI ships in English only. Localisation support is not in scope for the MVP. |
+| Custom feedback categories | The three feedback categories (Design request, Feature request, Bug fix) are fixed in the MVP. Configuration of custom categories is not supported. |

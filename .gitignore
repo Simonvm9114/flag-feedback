@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Environment (tracked examples stay committed)
+.env
+.env.local
+.env.*.local
+
+# Build outputs & tooling caches
+dist/
+build/
+.cache/
+coverage/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Python (optional)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor
+.idea/
+*.swp
+.vscode/

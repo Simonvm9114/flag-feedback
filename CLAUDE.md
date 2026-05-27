@@ -17,6 +17,6 @@ This project is built and supported by the Greenfield MVP Template — an AI-nat
 
 ---
 
-# Phase 1 — Requirements Gathering
+# Phase 2 — Client Deliverables
 
-This project is at the beginning of Phase 1. The intake questionnaire has been placed but not yet filled in. The goal of this phase is to complete the questionnaire through a guided intake conversation, then interpret the answers to produce the foundational requirements and documentation.
+This project is in Phase 2. The foundational documentation from Phase 1 is in place. The goal of this phase is for the developer and client to work through the content checklist together — supplying brand assets, copy, credentials, and any other project-specific material — so that the architecture conversation in Phase 3 can be grounded in real inputs rather than assumptions.

@@ -26,14 +26,8 @@ This package deploys to the **npm registry**, not a web server. There is no stag
 
 Do not commit tokens. Local publish uses gitignored `.npmrc` (see `.npmrc.example`).
 
-## Branch protection (manual — GitHub UI)
+## Branch protection (`main`)
 
-Apply on **`main`** before Phase 6 merges:
-
-1. Settings → Branches → Add rule for `main`
-2. Require a pull request before merging (optional for solo dev; recommended)
-3. Require status check **`check`** (from CI workflow) to pass
-4. Restrict direct pushes if desired
-5. Do not require reviews if self-merging per `docs/architecture/decisions/version-control.md`
+Configured on GitHub — requires status check **`check`** (CI workflow) before merge. Pull request reviews are not required (solo dev per `docs/architecture/decisions/version-control.md`).
 
 Current MVP work targets branch **`mvp/v2`** until merge (see `.hatch/deliverables/assets/npm-and-github-migration.md`).

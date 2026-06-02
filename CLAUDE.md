@@ -20,9 +20,3 @@ This project is built and supported by the Greenfield MVP Template — an AI-nat
 # Phase 4 — Project Skeleton & UI Kit
 
 This project is in Phase 4. The architecture is decided and all client deliverables are in place. The goal of this phase is to turn those decisions into a working project: tools and frameworks installed and configured, connectors validated, formal checks toolchain in place, frontend components derived from the branding assets and placed at their final location, and a version control strategy and deployment pipeline running to a reachable staging environment.
-
----
-
-## Active Command
-
-`/project:setup-deployment` is currently running.

@@ -2,12 +2,12 @@
 
 ## Decision
 
-| Check | Tool |
-|-------|------|
-| Lint | **ESLint 9** flat config + **typescript-eslint** |
-| Format | **Prettier** (`eslint-config-prettier` to avoid conflicts) |
-| Types | **TypeScript** with **`strict: true`**; CI runs **`tsc --noEmit`** |
-| Declarations | `.d.ts` emitted via Vite library build (e.g. `vite-plugin-dts`) |
+| Check        | Tool                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| Lint         | **ESLint 9** flat config + **typescript-eslint**                   |
+| Format       | **Prettier** (`eslint-config-prettier` to avoid conflicts)         |
+| Types        | **TypeScript** with **`strict: true`**; CI runs **`tsc --noEmit`** |
+| Declarations | `.d.ts` emitted via Vite library build (e.g. `vite-plugin-dts`)    |
 
 **CI gate (in order):** `lint` → `typecheck` → `test` → `build`
 

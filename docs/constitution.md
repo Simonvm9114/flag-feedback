@@ -32,12 +32,12 @@ flag-feedback-mvp is a client-side JavaScript package that enables structured, e
 
 The following are absolute prohibitions. Before implementing any feature or making any change, verify it does not conflict with an entry in this list. If it does, stop and ask the developer before proceeding.
 
-| Boundary | Description |
-|----------|-------------|
-| No screenshot capture | The package does not capture, render, or transmit screenshots of the host application in any form. |
-| No server-side code | The package is client-side only. It contains no server, no database adapter, and no backend logic of any kind. |
-| No authentication or access control | The package does not implement user identity, session management, or access tiers. Controlling who has access to the widget is the host application's responsibility. |
-| No framework-specific bindings | The package ships no React, Vue, Angular, Svelte, or other framework-specific wrappers in this release. |
-| No real-time click interception during recording | While a recording session is active, the package does not intercept clicks to offer a "comment or continue?" dialogue. This feature is explicitly deferred. |
-| No transmission to unconfigured URLs | The package may only POST data to the endpoint explicitly configured by the host developer. Hardcoded external URLs are prohibited. |
-| No capture of input field values | The content of any input, textarea, select, or equivalent element in the host application is never read or transmitted. |
+| Boundary                                         | Description                                                                                                                                                           |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No screenshot capture                            | The package does not capture, render, or transmit screenshots of the host application in any form.                                                                    |
+| No server-side code                              | The package is client-side only. It contains no server, no database adapter, and no backend logic of any kind.                                                        |
+| No authentication or access control              | The package does not implement user identity, session management, or access tiers. Controlling who has access to the widget is the host application's responsibility. |
+| No framework-specific bindings                   | The package ships no React, Vue, Angular, Svelte, or other framework-specific wrappers in this release.                                                               |
+| No real-time click interception during recording | While a recording session is active, the package does not intercept clicks to offer a "comment or continue?" dialogue. This feature is explicitly deferred.           |
+| No transmission to unconfigured URLs             | The package may only POST data to the endpoint explicitly configured by the host developer. Hardcoded external URLs are prohibited.                                   |
+| No capture of input field values                 | The content of any input, textarea, select, or equivalent element in the host application is never read or transmitted.                                               |

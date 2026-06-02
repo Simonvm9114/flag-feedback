@@ -28,14 +28,14 @@ flag-feedback package (browser)
 
 ## Components
 
-| Component | Role |
-|-----------|------|
-| **Integration API** | `initFeedback` validates config, binds activator, creates portal; `destroy()` tears down listeners and DOM |
-| **Session / state machine** | Owns feedback session fields and mode transitions |
-| **Portal UI** | Renders panel and indicators in an open Shadow Root; does not style the activator |
-| **Targeting** | Element-targeting mode, highlights, CSS selector paths (up to 5 ancestors) |
-| **Recorder** | Recording mode, event capture, folding, exclusions |
-| **Payload builder** | Assembles schema-compliant JSON at submit time |
+| Component                   | Role                                                                                                       |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Integration API**         | `initFeedback` validates config, binds activator, creates portal; `destroy()` tears down listeners and DOM |
+| **Session / state machine** | Owns feedback session fields and mode transitions                                                          |
+| **Portal UI**               | Renders panel and indicators in an open Shadow Root; does not style the activator                          |
+| **Targeting**               | Element-targeting mode, highlights, CSS selector paths (up to 5 ancestors)                                 |
+| **Recorder**                | Recording mode, event capture, folding, exclusions                                                         |
+| **Payload builder**         | Assembles schema-compliant JSON at submit time                                                             |
 
 ---
 
@@ -58,9 +58,9 @@ Not implemented in the package — the host application controls activator visib
 
 ## Third-party services
 
-| Service | Use |
-|---------|-----|
-| **npm** | Publish ESM/UMD + types for consumers |
+| Service    | Use                                     |
+| ---------- | --------------------------------------- |
+| **npm**    | Publish ESM/UMD + types for consumers   |
 | **GitHub** | Source control and GitHub Actions CI/CD |
 
 No runtime integrations (analytics, email, storage, auth providers) in the library.
@@ -69,14 +69,14 @@ No runtime integrations (analytics, email, storage, auth providers) in the libra
 
 ## Build, quality, and release
 
-| Layer | Stack |
-|-------|--------|
-| **Source** | TypeScript |
-| **Build** | Vite library mode |
-| **Checks** | ESLint, Prettier, `tsc --strict` |
-| **Tests** | Vitest + happy-dom (unit + component/DOM) |
-| **CI** | GitHub Actions: lint → typecheck → test → build |
-| **Release** | Semver git tag → `npm publish` (`latest` only) |
+| Layer       | Stack                                           |
+| ----------- | ----------------------------------------------- |
+| **Source**  | TypeScript                                      |
+| **Build**   | Vite library mode                               |
+| **Checks**  | ESLint, Prettier, `tsc --strict`                |
+| **Tests**   | Vitest + happy-dom (unit + component/DOM)       |
+| **CI**      | GitHub Actions: lint → typecheck → test → build |
+| **Release** | Semver git tag → `npm publish` (`latest` only)  |
 
 Details: `docs/architecture/decisions/` and `requirements/mvp/architecture.md`.
 
@@ -84,9 +84,9 @@ Details: `docs/architecture/decisions/` and `requirements/mvp/architecture.md`.
 
 ## Related documents
 
-| Document | Purpose |
-|----------|---------|
-| `docs/architecture/decisions/` | Per-dimension decisions and trade-offs |
-| `docs/architecture/vision.md` | Target architecture beyond MVP |
-| `requirements/mvp/architecture.md` | MVP implementation specification |
-| `.hatch/deliverables/assets/feedback-package-schema-v2.md` | Payload contract |
+| Document                                                   | Purpose                                |
+| ---------------------------------------------------------- | -------------------------------------- |
+| `docs/architecture/decisions/`                             | Per-dimension decisions and trade-offs |
+| `docs/architecture/vision.md`                              | Target architecture beyond MVP         |
+| `requirements/mvp/architecture.md`                         | MVP implementation specification       |
+| `.hatch/deliverables/assets/feedback-package-schema-v2.md` | Payload contract                       |

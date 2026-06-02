@@ -1,0 +1,82 @@
+/* Design tokens — client-approved visual decisions (flag-feedback experiment baseline;
+   see .hatch/deliverables/content-checklist.md, Feedback Panel UI Direction).
+   Existing token values are not modified without explicit developer and client approval.
+   Adding new tokens is always permitted. */
+
+:host,
+.ff-root {
+  box-sizing: border-box;
+}
+
+.ff-root *,
+.ff-root *::before,
+.ff-root *::after {
+  box-sizing: border-box;
+}
+
+.ff-root {
+  /* Color — primary */
+  --ff-color-primary: #6366f1;
+  --ff-color-primary-hover: #4f46e5;
+  --ff-color-primary-subtle: #f5f4ff;
+
+  /* Color — surfaces */
+  --ff-color-surface: #ffffff;
+  --ff-color-background: #fafafa;
+  --ff-color-background-muted: #f5f5f5;
+
+  /* Color — text */
+  --ff-color-text: #111111;
+  --ff-color-text-secondary: #666666;
+  --ff-color-text-muted: #888888;
+
+  /* Color — border */
+  --ff-color-border: #e0e0e0;
+  --ff-color-border-subtle: #f0f0f0;
+
+  /* Color — feedback */
+  --ff-color-success: #059669;
+  --ff-color-success-strong: #22c55e;
+  --ff-color-error: #dc2626;
+
+  /* Color — mode indicator pill */
+  --ff-color-pill-surface: #111111;
+  --ff-color-pill-text: #ffffff;
+  --ff-color-pill-accent: #ef4444;
+
+  /* Typography */
+  --ff-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ff-font-size-base: 14px;
+  --ff-font-size-sm: 12px;
+  --ff-font-size-md: 15px;
+  --ff-font-size-lg: 18px;
+  --ff-font-size-xl: 22px;
+  --ff-font-weight-normal: 400;
+  --ff-font-weight-medium: 500;
+  --ff-font-weight-semibold: 600;
+  --ff-line-height-tight: 1.25;
+  --ff-line-height-normal: 1.5;
+
+  /* Spacing (4px base) */
+  --ff-space-1: 4px;
+  --ff-space-2: 8px;
+  --ff-space-3: 12px;
+  --ff-space-4: 16px;
+  --ff-space-5: 20px;
+  --ff-space-6: 24px;
+
+  /* Radius */
+  --ff-radius-sm: 6px;
+  --ff-radius-md: 8px;
+  --ff-radius-lg: 12px;
+  --ff-radius-pill: 999px;
+
+  /* Elevation */
+  --ff-shadow-panel: 0 8px 36px rgba(0, 0, 0, 0.18);
+  --ff-shadow-control: 0 4px 14px rgba(0, 0, 0, 0.22);
+  --ff-shadow-pill: 0 4px 14px rgba(0, 0, 0, 0.3);
+
+  /* Layout */
+  --ff-panel-width: 420px;
+  --ff-z-overlay: 9999;
+}

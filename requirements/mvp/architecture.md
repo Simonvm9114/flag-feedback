@@ -54,14 +54,14 @@ Implementation specification for the `flag-feedback` v2.0.0 MVP. Rationale lives
 
 ## Hosting and deployment
 
-| Item | Value |
-|------|-------|
-| Deployment target | npm registry (artifact publish) |
-| CI/CD | GitHub Actions — CI on push and PR; publish on `v*.*.*` tags |
-| Platform / environments | `registry.npmjs.org` — `latest` dist-tag only |
-| Build command | `npm run build` |
-| Deploy command | `npm publish --access public` (tag workflow, after CI checks) |
-| Config files | `.github/workflows/ci.yml`, `.github/workflows/publish.yml`, `package.json` |
+| Item                    | Value                                                                       |
+| ----------------------- | --------------------------------------------------------------------------- |
+| Deployment target       | npm registry (artifact publish)                                             |
+| CI/CD                   | GitHub Actions — CI on push and PR; publish on `v*.*.*` tags                |
+| Platform / environments | `registry.npmjs.org` — `latest` dist-tag only                               |
+| Build command           | `npm run build`                                                             |
+| Deploy command          | `npm publish --access public` (tag workflow, after CI checks)               |
+| Config files            | `.github/workflows/ci.yml`, `.github/workflows/publish.yml`, `package.json` |
 
 **Secret:** `NPM_TOKEN` in GitHub Actions (not in package runtime).
 

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flag-feedback — UI kit preview</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #e8e8e8;
+      }
+      .page-header {
+        padding: 16px 24px;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+      }
+      .page-header a {
+        color: #6366f1;
+        text-decoration: none;
+      }
+      .page-header a:hover {
+        text-decoration: underline;
+      }
+      #kit-host {
+        box-sizing: border-box;
+        max-width: 468px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="page-header">
+      <a href="/">← Dev playground</a>
+      <h1 style="margin: 8px 0 0; font-size: 18px">UI kit preview (Phase 4 review)</h1>
+    </header>
+    <div id="kit-host"></div>
+    <script type="module" src="/kit-preview.ts"></script>
+  </body>
+</html>

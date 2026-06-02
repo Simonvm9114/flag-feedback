@@ -6,7 +6,7 @@ This is the project intake questionnaire. It records the foundational informatio
 
 ## 1. Purpose & Goal
 
-*What is the application or website for? What problem does it solve, for whom, and why now? Include any relevant background on the domain or market context.*
+_What is the application or website for? What problem does it solve, for whom, and why now? Include any relevant background on the domain or market context._
 
 **Answer:**
 
@@ -20,7 +20,7 @@ The screenshot capture feature present in the experiment is explicitly removed i
 
 ## 2. Minimum Success Definition
 
-*What must the MVP be able to do for it to be considered a success on day one? Describe the minimum functionality that delivers real value to the end user. Be as specific as possible — this directly determines what gets built.*
+_What must the MVP be able to do for it to be considered a success on day one? Describe the minimum functionality that delivers real value to the end user. Be as specific as possible — this directly determines what gets built._
 
 **Answer:**
 
@@ -38,7 +38,7 @@ The more ambitious "intercept every click during recording to offer a comment-or
 
 ## 3. Explicit Out-of-Scope
 
-*What is explicitly NOT part of this MVP? List features, integrations, user flows, or use cases that are intentionally deferred or excluded. Being specific here prevents scope creep during the build phase.*
+_What is explicitly NOT part of this MVP? List features, integrations, user flows, or use cases that are intentionally deferred or excluded. Being specific here prevents scope creep during the build phase._
 
 **Answer:**
 
@@ -54,7 +54,7 @@ The following are explicitly excluded from the MVP:
 
 ## 4. Stakeholders
 
-*Who is involved in this project? For each stakeholder, describe their role, their domain knowledge, and what success looks like from their perspective.*
+_Who is involved in this project? For each stakeholder, describe their role, their domain knowledge, and what success looks like from their perspective._
 
 **Client:**
 (Who commissioned the project, their background, their goals, and any constraints they bring)
@@ -77,7 +77,7 @@ The following are explicitly excluded from the MVP:
 
 ## 5. Constraints
 
-*What constraints apply to this project? Consider all relevant dimensions:*
+_What constraints apply to this project? Consider all relevant dimensions:_
 
 - **Technical:** High-level platform and device requirements only — for example, which devices or operating systems the MVP must support, whether it must work offline, or whether there are hard integration requirements with existing systems. If the client or developer already uses a specific code repository platform (GitHub, GitLab, Bitbucket) or has an existing hosting provider account, note it here — these are infrastructure constraints that affect the CI/CD and deployment choices made in Phase 3. Do not choose frameworks, tools, or infrastructure here — those decisions are made in Phase 3 (Architecture), where the full project context is available and trade-offs can be properly evaluated.
 - **Legal / Compliance:** data privacy, regulations, licensing, or accessibility requirements

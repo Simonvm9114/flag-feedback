@@ -12,13 +12,13 @@ Element-targeting mode and recording mode are independent sub-states (see `docs/
 
 **Session contents**
 
-| Field | Description |
-|-------|-------------|
-| Comment text | Free-form feedback text, truncated to 10,000 characters before submission |
-| Category | One of `design-request`, `feature-request`, or `bug-fix` (see `.hatch/deliverables/assets/feedback-package-schema-v2.md`) |
-| Element targets | Array of `{ path, comment }` entries from element-targeting mode |
-| Interaction log | Append-only array of interaction events from recording mode |
-| Recording start | Timestamp when recording began, or `null` if unused |
+| Field           | Description                                                                                                               |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Comment text    | Free-form feedback text, truncated to 10,000 characters before submission                                                 |
+| Category        | One of `design-request`, `feature-request`, or `bug-fix` (see `.hatch/deliverables/assets/feedback-package-schema-v2.md`) |
+| Element targets | Array of `{ path, comment }` entries from element-targeting mode                                                          |
+| Interaction log | Append-only array of interaction events from recording mode                                                               |
+| Recording start | Timestamp when recording began, or `null` if unused                                                                       |
 
 **Interaction log**
 
@@ -35,12 +35,12 @@ Element-targeting mode and recording mode are independent sub-states (see `docs/
 
 **Module boundaries**
 
-| Module | Responsibility |
-|--------|----------------|
-| Session / state machine | Mode transitions and session field ownership |
-| Recorder | Passive listener registration, event capture, folding |
-| Targeting | Element selection, highlight overlay, selector paths (up to 5 ancestor levels) |
-| Payload builder | Schema-compliant JSON assembly and field truncation |
+| Module                  | Responsibility                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| Session / state machine | Mode transitions and session field ownership                                   |
+| Recorder                | Passive listener registration, event capture, folding                          |
+| Targeting               | Element selection, highlight overlay, selector paths (up to 5 ancestor levels) |
+| Payload builder         | Schema-compliant JSON assembly and field truncation                            |
 
 ## Context
 
@@ -56,12 +56,12 @@ Complex mode interactions (panel hide/show, simultaneous mode indicators, submit
 
 ## Trade-offs accepted
 
-| Axis | Assessment |
-|------|------------|
-| **Prompt coherence** | High — session fields map to payload schema; state machine documents valid mode sequences. |
-| **Failure surface** | Low–moderate — in-memory only; lost on refresh. Listener cleanup handled by `destroy()`. |
-| **Reversibility** | Good — persistence or ID strategy can be added later without breaking the payload contract. |
-| **Operational simplicity** | High — no sync or cache invalidation in MVP. |
+| Axis                       | Assessment                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| **Prompt coherence**       | High — session fields map to payload schema; state machine documents valid mode sequences.  |
+| **Failure surface**        | Low–moderate — in-memory only; lost on refresh. Listener cleanup handled by `destroy()`.    |
+| **Reversibility**          | Good — persistence or ID strategy can be added later without breaking the payload contract. |
+| **Operational simplicity** | High — no sync or cache invalidation in MVP.                                                |
 
 **Accepted costs:** Unsaved feedback is lost on refresh or tab close. State machine requires upfront design before UI work.
 

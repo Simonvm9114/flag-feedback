@@ -1,0 +1,2 @@
+# Copy to .npmrc for local publish (gitignored). CI uses GitHub secret NPM_TOKEN.
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}

@@ -35,12 +35,12 @@ Endpoint validation rules (HTTPS required except localhost, relative URLs reject
 
 ## Trade-offs accepted
 
-| Axis | Assessment |
-|------|------------|
-| **Prompt coherence** | High — one entry function, one POST action, explicit config shape. |
-| **Failure surface** | Low — init-time validation catches misconfiguration early. |
-| **Reversibility** | Good — build tool or module format can change without altering the public config contract. |
-| **Operational simplicity** | High — publish artifacts to npm. |
+| Axis                       | Assessment                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| **Prompt coherence**       | High — one entry function, one POST action, explicit config shape.                         |
+| **Failure surface**        | Low — init-time validation catches misconfiguration early.                                 |
+| **Reversibility**          | Good — build tool or module format can change without altering the public config contract. |
+| **Operational simplicity** | High — publish artifacts to npm.                                                           |
 
 **Accepted costs:** TypeScript and dual-format builds add dev-time tooling compared to a single plain JS file. Host developers must supply a valid absolute endpoint URL at init time.
 

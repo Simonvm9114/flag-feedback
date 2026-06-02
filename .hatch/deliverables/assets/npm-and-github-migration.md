@@ -6,13 +6,13 @@ Instructions for replacing the `flag-feedback` experiment (v1.x) with this MVP (
 
 ## Decisions (locked in Phase 2)
 
-| Asset | Decision |
-| --- | --- |
-| **npm package name** | `flag-feedback` (reuse existing; do not publish as `flag-feedback-mvp`) |
-| **npm scope** | None — unscoped, public |
-| **First MVP release** | `2.0.0` (breaking rewrite; v1.x remains available on npm) |
-| **GitHub repository** | `https://github.com/Simonvm9114/flag-feedback.git` (evolve in place; no repo rename) |
-| **Experiment preservation** | Tag `v1.3.1` and branch `legacy/v1` before replacing `main` |
+| Asset                       | Decision                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| **npm package name**        | `flag-feedback` (reuse existing; do not publish as `flag-feedback-mvp`)              |
+| **npm scope**               | None — unscoped, public                                                              |
+| **First MVP release**       | `2.0.0` (breaking rewrite; v1.x remains available on npm)                            |
+| **GitHub repository**       | `https://github.com/Simonvm9114/flag-feedback.git` (evolve in place; no repo rename) |
+| **Experiment preservation** | Tag `v1.3.1` and branch `legacy/v1` before replacing `main`                          |
 
 ---
 
@@ -140,12 +140,12 @@ After publishing v2.0.0:
 
 ## What not to do
 
-| Avoid | Why |
-| --- | --- |
-| Renaming the GitHub repo and creating a new one with the same name | Breaks URLs, issues, and CI; unnecessary when a legacy branch suffices |
-| Publishing under `flag-feedback-mvp` | Splits npm history and contradicts the reuse decision |
-| Replacing `main` before tagging and branching `legacy/v1` | Loses easy access to the experiment baseline |
-| Skipping semver major bump | v2 removes screenshots and changes the payload schema — consumers need a clear breaking-change signal |
+| Avoid                                                              | Why                                                                                                   |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Renaming the GitHub repo and creating a new one with the same name | Breaks URLs, issues, and CI; unnecessary when a legacy branch suffices                                |
+| Publishing under `flag-feedback-mvp`                               | Splits npm history and contradicts the reuse decision                                                 |
+| Replacing `main` before tagging and branching `legacy/v1`          | Loses easy access to the experiment baseline                                                          |
+| Skipping semver major bump                                         | v2 removes screenshots and changes the payload schema — consumers need a clear breaking-change signal |
 
 ---
 

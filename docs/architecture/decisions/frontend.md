@@ -29,12 +29,12 @@ The package must work in vanilla JS, React, and Vue host applications without fr
 
 ## Trade-offs accepted
 
-| Axis | Assessment |
-|------|------------|
-| **Prompt coherence** | High — `initFeedback({ activator, endpoint, … })` plus portal rendering is unambiguous for agents and host developers. |
-| **Failure surface** | Moderate — portal lifecycle and document-level listeners for targeting/recording require disciplined `destroy()` cleanup in SPAs. |
-| **Reversibility** | Good — entry API and rendering strategy can change without altering the feedback payload contract. |
-| **Operational simplicity** | High — no runtime dependencies; standard library build; no consumer environment variables. |
+| Axis                       | Assessment                                                                                                                        |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Prompt coherence**       | High — `initFeedback({ activator, endpoint, … })` plus portal rendering is unambiguous for agents and host developers.            |
+| **Failure surface**        | Moderate — portal lifecycle and document-level listeners for targeting/recording require disciplined `destroy()` cleanup in SPAs. |
+| **Reversibility**          | Good — entry API and rendering strategy can change without altering the feedback payload contract.                                |
+| **Operational simplicity** | High — no runtime dependencies; standard library build; no consumer environment variables.                                        |
 
 **Accepted costs:** Host developers must call `initFeedback` in JavaScript (no drop-in HTML tag). The package must implement and document lifecycle teardown. Success feedback after submission may apply a transient state to the activator element (for example an `aria` attribute or removable child node) without imposing default visual styles.
 

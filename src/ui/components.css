@@ -1,0 +1,179 @@
+/* UI kit component styles — use design tokens only. */
+
+.ff-layout {
+  width: 100%;
+  max-width: var(--ff-panel-width);
+  min-width: 0;
+  padding: var(--ff-space-4);
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-base);
+  color: var(--ff-color-text);
+  line-height: var(--ff-line-height-normal);
+}
+
+.ff-heading {
+  margin: 0;
+  font-family: var(--ff-font-family);
+  font-weight: var(--ff-font-weight-semibold);
+  color: var(--ff-color-text);
+  line-height: var(--ff-line-height-tight);
+}
+
+.ff-heading--xl {
+  font-size: var(--ff-font-size-xl);
+}
+
+.ff-heading--lg {
+  font-size: var(--ff-font-size-lg);
+}
+
+.ff-heading--md {
+  font-size: var(--ff-font-size-md);
+}
+
+.ff-text {
+  margin: 0;
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-base);
+  color: var(--ff-color-text);
+  line-height: var(--ff-line-height-normal);
+}
+
+.ff-text--secondary {
+  color: var(--ff-color-text-secondary);
+}
+
+.ff-text--sm {
+  font-size: var(--ff-font-size-sm);
+}
+
+.ff-card {
+  width: 100%;
+  max-width: 100%;
+  background: var(--ff-color-surface);
+  border: 1px solid var(--ff-color-border-subtle);
+  border-radius: var(--ff-radius-lg);
+  box-shadow: var(--ff-shadow-panel);
+  padding: var(--ff-space-4);
+}
+
+.ff-card--stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ff-space-3);
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.ff-card--stack > .ff-field,
+.ff-card--stack > .ff-btn {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.ff-btn {
+  width: 100%;
+  max-width: 100%;
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-base);
+  font-weight: var(--ff-font-weight-medium);
+  border-radius: var(--ff-radius-md);
+  border: none;
+  cursor: pointer;
+  padding: var(--ff-space-2) var(--ff-space-4);
+  min-height: 44px;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.ff-btn--primary {
+  background: var(--ff-color-primary);
+  color: var(--ff-color-surface);
+}
+
+.ff-btn--primary:hover {
+  background: var(--ff-color-primary-hover);
+}
+
+.ff-btn--secondary {
+  background: transparent;
+  color: var(--ff-color-text);
+  border: 1.5px solid var(--ff-color-border);
+}
+
+.ff-btn--secondary:hover {
+  border-color: var(--ff-color-primary);
+  background: var(--ff-color-primary-subtle);
+}
+
+.ff-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ff-space-1);
+  width: 100%;
+  min-width: 0;
+}
+
+.ff-label {
+  font-size: var(--ff-font-size-sm);
+  font-weight: var(--ff-font-weight-medium);
+  color: var(--ff-color-text);
+}
+
+.ff-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--ff-space-2) var(--ff-space-3);
+  border: 1.5px solid var(--ff-color-border);
+  border-radius: var(--ff-radius-md);
+  font: inherit;
+  color: var(--ff-color-text);
+  background: var(--ff-color-background);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.ff-input:focus {
+  border-color: var(--ff-color-primary);
+  background: var(--ff-color-surface);
+}
+
+.ff-input--error {
+  border-color: var(--ff-color-error);
+}
+
+.ff-field-error {
+  display: block;
+  max-width: 100%;
+  font-size: var(--ff-font-size-sm);
+  color: var(--ff-color-error);
+  overflow-wrap: break-word;
+}
+
+.ff-pill-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ff-space-2);
+  height: 44px;
+  padding: 0 var(--ff-space-5);
+  border-radius: var(--ff-radius-pill);
+  background: var(--ff-color-pill-surface);
+  color: var(--ff-color-pill-text);
+  font-size: var(--ff-font-size-base);
+  box-shadow: var(--ff-shadow-pill);
+  border: none;
+}
+
+.ff-pill-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ff-color-pill-accent);
+  flex-shrink: 0;
+}

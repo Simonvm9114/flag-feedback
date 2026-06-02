@@ -17,24 +17,24 @@ Two tiers determine who is authoritative when documents conflict:
 
 **Authoritative documents** — the source of truth. Never modify these to match a derivative.
 
-| Document | Authority over |
-|---|---|
-| `docs/constitution.md` | Non-negotiable principles and hard constraints |
-| `docs/functional/context.md` | Domain background, stakeholder profiles, business context |
-| `docs/functional/glossary.md` | Term definitions |
-| `requirements/mvp/user-stories.md` | What users need the system to do |
-| `requirements/mvp/acceptance-criteria.md` | What "done" means per story |
-| `requirements/mvp/out-of-scope.md` | What is explicitly excluded |
+| Document                                  | Authority over                                            |
+| ----------------------------------------- | --------------------------------------------------------- |
+| `docs/constitution.md`                    | Non-negotiable principles and hard constraints            |
+| `docs/functional/context.md`              | Domain background, stakeholder profiles, business context |
+| `docs/functional/glossary.md`             | Term definitions                                          |
+| `requirements/mvp/user-stories.md`        | What users need the system to do                          |
+| `requirements/mvp/acceptance-criteria.md` | What "done" means per story                               |
+| `requirements/mvp/out-of-scope.md`        | What is explicitly excluded                               |
 
 **Derivative documents** — produced by phases. Rewrite these when they contradict an authoritative source.
 
-| Document | Derives from |
-|---|---|
-| `docs/architecture.md` | All authoritative documents |
-| `docs/architecture/decisions/` (all files) | Authoritative documents + Phase 3 dialogue |
-| `docs/architecture/vision.md` | Authoritative documents + all architecture decisions |
-| `requirements/mvp/architecture.md` | All of the above (if present) |
-| `requirements/mvp/implementation-heuristics.md` | Architecture + requirements (if present) |
+| Document                                        | Derives from                                         |
+| ----------------------------------------------- | ---------------------------------------------------- |
+| `docs/architecture.md`                          | All authoritative documents                          |
+| `docs/architecture/decisions/` (all files)      | Authoritative documents + Phase 3 dialogue           |
+| `docs/architecture/vision.md`                   | Authoritative documents + all architecture decisions |
+| `requirements/mvp/architecture.md`              | All of the above (if present)                        |
+| `requirements/mvp/implementation-heuristics.md` | Architecture + requirements (if present)             |
 
 ---
 

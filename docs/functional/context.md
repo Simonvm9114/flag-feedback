@@ -28,13 +28,13 @@ Across all three groups, the widget must be operable without prior instruction. 
 
 ### Developer
 
-Simon van Meegdenburg — the sole developer. He built the `flag-feedback` experiment and has full context on its codebase, which serves as the technical baseline for this MVP. There is no external development team. Development proceeds at Simon's own pace with no fixed deadline.
+Simon van Meegdenburg — the sole developer. There is no external development team. Development proceeds at Simon's own pace with no fixed deadline.
 
 ## Domain Notes
 
 **Positioning:** flag-feedback-mvp sits at the intersection of developer tooling and user feedback UX. Unlike general-purpose feedback widgets (such as Hotjar or UserVoice), this package is intentionally invisible until activated, and its activation control carries no imposed visual identity. This makes it suitable for embedding in polished, branded applications where a floating "Give feedback" button would be intrusive.
 
-**Package distribution:** The package is distributed via npm and is intended to be framework-agnostic. Host developers import it into any web application regardless of the framework they are using.
+**Package distribution:** The package is published on npm as `flag-feedback` and is intended to be framework-agnostic. Host developers import it and call `initFeedback` with a host-owned activator element and configuration (see `docs/architecture/decisions/frontend.md`, `docs/architecture/decisions/backend.md`).
 
 **Feedback schema as a contract:** The JSON payload the package POSTs to the configured endpoint is effectively a contract between the package and the receiving system (typically a backend controlled by Simon). Changes to the payload schema should be treated as breaking changes. The schema must remain machine-readable and consistent so that AI agents processing submissions do not need to handle multiple payload shapes.
 

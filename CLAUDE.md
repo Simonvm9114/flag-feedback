@@ -17,6 +17,6 @@ This project is built and supported by the Greenfield MVP Template — an AI-nat
 
 ---
 
-# Phase 2 — Client Deliverables
+# Phase 3 — Architecture Design
 
-This project is in Phase 2. The foundational documentation from Phase 1 is in place. The goal of this phase is for the developer and client to work through the content checklist together — supplying brand assets, copy, credentials, and any other project-specific material — so that the architecture conversation in Phase 3 can be grounded in real inputs rather than assumptions.
+This project is in Phase 3. The functional requirements and client deliverables are in place. The goal of this phase is to decide the technical architecture across four focused conversations — core stack, third-party integrations, hosting and version control, and quality toolchain — recording decisions immediately after each dialogue. Once all decisions are settled, the main architecture documents are committed and the project is ready for Phase 4.

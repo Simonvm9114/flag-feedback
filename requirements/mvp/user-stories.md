@@ -10,16 +10,16 @@ Roles used in these stories are defined in `docs/functional/glossary.md` and `do
 As a host developer, I want to install the package from npm so that I can add structured feedback collection to my application without building the capability from scratch.
 
 **[US-02] Place the activator**
-As a host developer, I want to place the activator component anywhere in my application's DOM so that it appears in a location that suits my application's layout and user experience.
+As a host developer, I want to create an activator element anywhere in my application's DOM and pass it to `initFeedback` so that it appears in a location that suits my application's layout and user experience.
 
 **[US-03] Style the activator freely**
 As a host developer, I want the activator to have no built-in visual style so that I can give it any appearance I choose using my application's existing CSS and design system.
 
 **[US-04] Configure the submission endpoint**
-As a host developer, I want to configure the URL the package POSTs feedback to so that submitted feedback is sent to my own backend and stored in my own database.
+As a host developer, I want to configure the URL the package POSTs feedback to when calling `initFeedback` so that submitted feedback is sent to my own backend and stored in my own database.
 
 **[US-05] Pass application metadata**
-As a host developer, I want to optionally supply an app ID, git commit SHA, and git repository URL so that submitted feedback packages contain enough context to identify which version and build of the application the feedback relates to.
+As a host developer, I want to optionally supply an app ID, git commit SHA, and git repository URL in the `initFeedback` configuration so that submitted feedback packages contain enough context to identify which version and build of the application the feedback relates to.
 
 ---
 

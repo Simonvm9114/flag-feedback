@@ -5,7 +5,7 @@ Terms are listed alphabetically. Each entry defines the term as it is used in th
 ---
 
 **Activator**
-The component the host developer places in the host application's DOM to open the feedback panel. The activator has no built-in visual style; its appearance is entirely determined by the container element and styles the host developer applies to it. The activator is distinct from the feedback panel: the activator opens the panel, and the panel is where all feedback collection takes place. Do not confuse the activator with the feedback panel.
+Any DOM element the host developer creates and places in the host application's DOM to open the feedback panel. The package attaches an activation listener to the element passed as `activator` in `initFeedback`; it does not create, wrap, or style the activator. The activator has no built-in visual style from the package; its appearance is entirely determined by the host developer's markup and stylesheet (see `docs/constitution.md`, Principle 2). The activator is distinct from the feedback panel: the activator opens the panel, and the panel is where all feedback collection takes place. Do not confuse the activator with the feedback panel.
 
 ---
 
@@ -15,7 +15,7 @@ A stakeholder who has been given access to a live host application and uses the 
 ---
 
 **CSS selector path**
-The identifier used to describe a targeted UI element in the feedback payload. It is derived by walking up the DOM from the selected element and composing a CSS selector up to 5 ancestor levels deep. This convention matches the one established in the `flag-feedback` experiment. CSS selector paths are the package's mechanism for associating feedback with a specific element; they are not guaranteed to be stable across DOM-restructuring refactors.
+The identifier used to describe a targeted UI element in the feedback payload. It is derived by walking up the DOM from the selected element and composing a CSS selector up to 5 ancestor levels deep. CSS selector paths are the package's mechanism for associating feedback with a specific element; they are not guaranteed to be stable across DOM-restructuring refactors.
 
 ---
 
@@ -40,17 +40,22 @@ The JSON payload that the package POSTs to the configured endpoint when the user
 ---
 
 **Feedback panel**
-The UI rendered by the package when the activator is triggered. The feedback panel contains all controls for feedback collection: the comment text area, the category selector, the element-targeting mode control, the recording mode control, and the submit button. The feedback panel is owned and rendered by the package — unlike the activator, it does have a visual appearance. The panel hides automatically when recording starts or when element-targeting mode is activated, so that the application UI is unobstructed.
+The UI rendered by the package when the activator is triggered. The panel is mounted in a container appended to `document.body`, inside an open Shadow Root, separate from the activator's DOM subtree (see `docs/architecture/decisions/frontend.md`). The feedback panel contains all controls for feedback collection: the comment text area, the category selector, the element-targeting mode control, the recording mode control, and the submit button. The feedback panel is owned and rendered by the package — unlike the activator, it does have a visual appearance. The panel hides automatically when recording starts or when element-targeting mode is activated, so that the application UI is unobstructed.
 
 ---
 
 **Host application**
-The web application into which the flag-feedback-mvp package is installed. The host application is responsible for placing the activator in its DOM, configuring the endpoint, and controlling which users have access to the widget. The package has no knowledge of the host application's framework, routing, or authentication system.
+The web application into which the `flag-feedback` npm package is installed. The host application is responsible for creating the activator element, calling `initFeedback`, and controlling which users have access to the widget. The package has no knowledge of the host application's framework, routing, or authentication system.
 
 ---
 
 **Host developer**
-The developer who installs the package into a host application and configures it. In the context of this project, Simon is the host developer for his own applications. The host developer is responsible for endpoint configuration, DOM placement of the activator, and access control.
+The developer who installs the package into a host application and configures it. In the context of this project, Simon is the host developer for his own applications. The host developer creates the activator element, calls `initFeedback` with the endpoint and optional metadata, and controls access by deciding which users receive an initialized activator.
+
+---
+
+**initFeedback**
+The package's primary integration function. The host developer calls `initFeedback({ activator, endpoint, appId?, gitCommit?, gitRepo? })` to bind an activator element, validate configuration, and create the overlay UI portal. It returns a widget instance. On invalid configuration (for example a missing or disallowed endpoint), initialization fails without attaching listeners or creating portal UI (see `docs/architecture/decisions/backend.md`).
 
 ---
 
@@ -65,7 +70,7 @@ A mode the widget user explicitly activates via a "Start recording" control in t
 ---
 
 **Recording indicator**
-A minimal UI element rendered by the package while recording mode is active. It indicates to the user that recording is in progress and provides the control to stop recording. The recording indicator must not substantially obstruct the host application's UI.
+A minimal UI element rendered by the package in the body portal while recording mode or element-targeting mode is active. It indicates to the user that the mode is in progress and provides the control to stop or deactivate it. The recording indicator must not substantially obstruct the host application's UI.
 
 ---
 
@@ -76,6 +81,11 @@ An end user of a host application who has been granted access to the feedback wi
 
 **Widget**
 An informal collective term for the feedback collection system as a whole: the activator, the feedback panel, the recording indicator, and all associated behaviour. When the term "widget" appears in conversation or documentation without further qualification, it refers to the entire package as experienced by the end user — not to any single component.
+
+---
+
+**Widget instance**
+The object returned by a successful `initFeedback` call. It exposes `destroy()` for lifecycle cleanup — removing portal UI, event listeners, and activator bindings when the host application unmounts the widget (for example on SPA route change).
 
 ---
 

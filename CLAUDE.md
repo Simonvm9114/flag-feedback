@@ -26,15 +26,3 @@ This project is in Phase 4. The architecture is decided and all client deliverab
 ## Active Command
 
 `/project:setup-deployment` is currently running.
-
----
-
-## Active Command
-
-`/project:setup-deployment` is currently running.
-
----
-
-## Active Command
-
-`/project:setup-deployment` is currently running.

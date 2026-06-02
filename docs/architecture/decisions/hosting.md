@@ -11,7 +11,7 @@ This package has no runtime deployment. Distribution is **artifact publish to np
 | Environments      | **`latest` dist-tag only** — no `beta` or staging/production servers                                              |
 | Build command     | `npm run build` (Vite library mode → `dist/`)                                                                     |
 | Deploy command    | `npm publish --access public` (CI only, after tests pass on tag)                                                  |
-| Config files      | `.github/workflows/deploy.yml`, `package.json` (`files`, `exports`, `publishConfig`) |
+| Config files      | `.github/workflows/ci.yml`, `.github/workflows/publish.yml`, `package.json` (`files`, `exports`, `publishConfig`) |
 
 **Secrets:** `NPM_TOKEN` stored as a GitHub Actions secret for the publish workflow. No runtime environment variables in the package.
 

@@ -4,24 +4,24 @@ This package deploys to the **npm registry**, not a web server. There is no stag
 
 ## Environments
 
-| Environment | Trigger | Result | Verification URL |
-|-------------|---------|--------|-------------------|
-| **CI / pre-release** | Push or PR to any branch | Lint, format, test, build; `dist/` uploaded as workflow artifact | [GitHub Actions](https://github.com/Simonvm9114/flag-feedback/actions) |
-| **Production (`latest`)** | Push tag `v*.*.*` on `main` | `npm publish --access public` | [npm package page](https://www.npmjs.com/package/flag-feedback) · [unpkg ESM](https://unpkg.com/flag-feedback@2.0.0/dist/flag-feedback.esm.js) (after publish) |
+| Environment               | Trigger                     | Result                                                           | Verification URL                                                                                                                                               |
+| ------------------------- | --------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CI / pre-release**      | Push or PR to any branch    | Lint, format, test, build; `dist/` uploaded as workflow artifact | [GitHub Actions](https://github.com/Simonvm9114/flag-feedback/actions)                                                                                         |
+| **Production (`latest`)** | Push tag `v*.*.*` on `main` | `npm publish --access public`                                    | [npm package page](https://www.npmjs.com/package/flag-feedback) · [unpkg ESM](https://unpkg.com/flag-feedback@2.0.0/dist/flag-feedback.esm.js) (after publish) |
 
 ## Workflows
 
-| File | Stages |
-|------|--------|
-| `.github/workflows/ci.yml` | Check → build → `npm publish --dry-run` → upload `dist/` artifact (pre-release / “staging”) |
-| `.github/workflows/publish.yml` | Check → build → `npm publish` to registry (production on tags) |
+| File                            | Stages                                                                                      |
+| ------------------------------- | ------------------------------------------------------------------------------------------- |
+| `.github/workflows/ci.yml`      | Check → build → `npm publish --dry-run` → upload `dist/` artifact (pre-release / “staging”) |
+| `.github/workflows/publish.yml` | Check → build → `npm publish` to registry (production on tags)                              |
 
 `package.json` `publishConfig`, `repository`, `files`, and `exports` are the npm platform configuration (no `vercel.json` / `fly.toml` — not applicable).
 
 ## Secrets (GitHub repository settings)
 
-| Secret | Purpose |
-|--------|---------|
+| Secret      | Purpose                                                 |
+| ----------- | ------------------------------------------------------- |
 | `NPM_TOKEN` | Automation token with publish access to `flag-feedback` |
 
 Do not commit tokens. Local publish uses gitignored `.npmrc` (see `.npmrc.example`).

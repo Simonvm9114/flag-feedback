@@ -19,4 +19,4 @@ This project is built and supported by the Greenfield MVP Template — an AI-nat
 
 # Phase 5 — Best Practices
 
-This project is in Phase 5. A working project skeleton is in place. The goal of this phase is to establish two complementary layers of best practices — implementation heuristics and structural design principles — both grounded in the concrete architecture and requirements already agreed, so that the coding agent in Phase 6 builds with a consistent and considered approach from the start.
+This project is in Phase 5 (complete). Implementation heuristics and structural design principles are established. Phase 6 (MVP Build & Refinement) is next: read `requirements/mvp/implementation-heuristics.md` and `docs/architecture/decisions/design-principles.md` before building.

@@ -12,7 +12,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The package can be imported in a Vue application without runtime errors.
 - [ ] The package has zero production runtime dependencies on third-party libraries.
 
-**Relevant constraints:** `docs/architecture/decisions/backend.md` (ESM/UMD, zero runtime deps), `requirements/mvp/architecture.md` (package identity), `docs/architecture/decisions/formal-checks.md`
+**Relevant constraints:** `docs/architecture/decisions/backend.md` (ESM/UMD, zero runtime deps), `requirements/mvp/architecture.md` (package identity), `docs/architecture/decisions/formal-checks.md`, `docs/architecture/decisions/design-principles.md` (principle 1)
 
 ---
 
@@ -22,7 +22,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The activator renders at the position in the DOM where the host developer placed it — it does not reposition itself to a fixed corner of the viewport.
 - [ ] Placing two activator instances in the DOM simultaneously does not cause JavaScript errors.
 
-**Relevant constraints:** `docs/architecture/decisions/frontend.md` (host-owned activator, portal separate from activator DOM)
+**Relevant constraints:** `docs/architecture/decisions/frontend.md` (host-owned activator, portal separate from activator DOM), `docs/architecture/decisions/design-principles.md` (principle 1)
 
 ---
 
@@ -32,7 +32,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] CSS rules targeting the activator's container element in the host application's stylesheet fully control the activator's appearance.
 - [ ] Inspecting the activator in browser DevTools shows no package-injected inline styles on the activator element.
 
-**Relevant constraints:** `docs/architecture/decisions/frontend.md` (no package styles on activator), `docs/constitution.md` (Principle 2)
+**Relevant constraints:** `docs/architecture/decisions/frontend.md` (no package styles on activator), `docs/constitution.md` (Principle 2), `docs/architecture/decisions/design-principles.md` (principle 1)
 
 ---
 
@@ -47,7 +47,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] An `https://` URL is accepted.
 - [ ] `http://localhost/...` and `http://127.0.0.1/...` URLs are accepted.
 
-**Relevant constraints:** `docs/architecture/decisions/backend.md` (endpoint validation, `fetch` POST), `docs/constitution.md` (Principles 6–7)
+**Relevant constraints:** `docs/architecture/decisions/backend.md` (endpoint validation, `fetch` POST, host integration patterns), `docs/constitution.md` (Principles 6–7), `requirements/mvp/implementation-heuristics.md` (heuristic 16), `docs/architecture/decisions/design-principles.md` (principles 1, 3, 5, 6)
 
 ---
 
@@ -58,7 +58,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] When none are supplied, the package initializes and operates without error; the `app` fields are absent or null in the submitted payload.
 - [ ] Supplying a subset (e.g. only `appId`) does not cause an error; only the supplied fields appear in the payload.
 
-**Relevant constraints:** `docs/architecture/decisions/backend.md` (config shape), `docs/architecture/decisions/data.md` (payload builder), `.hatch/deliverables/assets/feedback-package-schema-v2.md`
+**Relevant constraints:** `docs/architecture/decisions/backend.md` (config shape), `docs/architecture/decisions/data.md` (payload builder), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/architecture/decisions/design-principles.md` (principles 1, 2)
 
 ---
 
@@ -69,7 +69,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The host application remains fully interactive behind the feedback panel (e.g. links work, inputs accept focus).
 - [ ] The feedback panel can be closed without submitting.
 
-**Relevant constraints:** `docs/architecture/decisions/frontend.md` (panel in Shadow Root portal), `docs/architecture/decisions/data.md` (state machine), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/frontend.md` (panel in Shadow Root portal), `docs/architecture/decisions/data.md` (state machine), `docs/architecture/decisions/design-principles.md` (principles 1, 2), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -79,7 +79,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] Text typed into the comment field is included in the submitted feedback package under `feedback.text`.
 - [ ] Text exceeding 10,000 characters is truncated to 10,000 characters before submission; no error is thrown.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (session fields, truncation), `requirements/mvp/architecture.md`, UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (session fields, truncation), `requirements/mvp/architecture.md`, `docs/architecture/decisions/design-principles.md` (principle 2), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -90,7 +90,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] Attempting to submit without selecting a category is blocked; an inline error message is displayed.
 - [ ] The selected category value is included in the submitted feedback package under `feedback.category`.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (state machine, required category), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (state machine, required category), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/architecture/decisions/design-principles.md` (principle 2), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -102,7 +102,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] Element-targeting mode can be activated independently of whether a recording session is active.
 - [ ] Deactivating element-targeting mode without selecting any element returns the user to the feedback panel with no error.
 
-**Relevant constraints:** `docs/architecture/decisions/frontend.md` (mode indicators), `docs/architecture/decisions/data.md` (independent modes, state machine), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/frontend.md` (mode indicators), `docs/architecture/decisions/data.md` (independent modes, state machine), `docs/architecture/decisions/design-principles.md` (principles 2, 3), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -115,7 +115,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The element target recorded in the feedback package includes the element's CSS selector path (up to 5 ancestor levels) and the user's comment for that element.
 - [ ] Clicking the activator element itself while in element-targeting mode does not create a self-referential element target.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (targeting module, selector paths), `docs/architecture/decisions/frontend.md` (document-level listeners), `docs/functional/glossary.md` (element target), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (targeting module, selector paths), `docs/architecture/decisions/frontend.md` (document-level listeners), `docs/functional/glossary.md` (element target), `requirements/mvp/implementation-heuristics.md` (heuristic 11), `docs/architecture/decisions/design-principles.md` (principles 2, 3, 4), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -126,7 +126,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] All element targets are included in the submitted feedback package as an array under `elementTargets`.
 - [ ] Submitting with three or more element targets works without error.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (session `elementTargets`, payload builder), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (session `elementTargets`, payload builder), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/architecture/decisions/design-principles.md` (principles 2, 4), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -144,8 +144,11 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] Password fields (`input[type="password"]`) are excluded from recording — no interaction event is emitted for them.
 - [ ] Elements with `data-flag-feedback-ignore` (or an equivalent attribute) are excluded from recording.
 - [ ] Consecutive identical events (same type and same element path) are collapsed into a single entry with a `count` field.
+- [ ] Clicks and other interactions on the package portal, mode indicators, or activator element are not recorded in the interaction log (including using the recording indicator to stop recording).
+- [ ] The interaction log does not contain a burst of per-keystroke `input` entries for a single field where the user typed a short phrase — input activity is coalesced so the log stays useful for tracing UI behaviour.
+- [ ] Recorded events use CSS selector paths on host-application elements so an agent can locate the relevant UI (schema types unchanged: click, input, change, submit, scroll, navigation, errors).
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (recorder module, folding, exclusions), `docs/constitution.md` (Principle 5), `docs/architecture/decisions/frontend.md` (panel hides during recording)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (recorder module, folding, exclusions, meaningful capture), `docs/constitution.md` (Principle 5), `docs/architecture/decisions/frontend.md` (panel hides during recording), `requirements/mvp/implementation-heuristics.md` (heuristics 7, 11, 13), `docs/architecture/decisions/design-principles.md` (principles 3, 4)
 
 ---
 
@@ -157,7 +160,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The user can discard the recording via an explicit control, resetting the interaction count to zero.
 - [ ] After discarding, the user can start a new recording session from the feedback panel.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (state machine, interaction log), `docs/architecture/decisions/frontend.md` (recording indicator), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (state machine, interaction log), `docs/architecture/decisions/frontend.md` (recording indicator), `requirements/mvp/implementation-heuristics.md` (heuristic 11), `docs/architecture/decisions/design-principles.md` (principles 2, 3), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -168,7 +171,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] Exactly one HTTP POST request is made to the configured endpoint for the submission.
 - [ ] The submitted payload matches the feedback package schema (see `docs/functional/context.md` for schema description).
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (`buildPackage()`), `docs/architecture/decisions/backend.md` (single POST), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/constitution.md` (Principle 7), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (`buildPackage()`), `docs/architecture/decisions/backend.md` (single POST), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/constitution.md` (Principle 7), `requirements/mvp/implementation-heuristics.md` (heuristics 4, 16), `docs/architecture/decisions/design-principles.md` (principles 2, 3, 4), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -178,7 +181,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The submitted JSON includes `elementTargets: []` and `interactions: []`.
 - [ ] No error or warning is shown to the user when submitting without element targets or recording.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (payload builder, empty arrays), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (payload builder, empty arrays), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/architecture/decisions/design-principles.md` (principles 2, 4), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -190,7 +193,21 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The inline error message includes a way to retry submission without re-entering feedback.
 - [ ] The error message does not expose raw server error details to the user.
 
-**Relevant constraints:** `docs/architecture/decisions/data.md` (session reset), `docs/architecture/decisions/backend.md` (`fetch` response handling), `docs/architecture/decisions/frontend.md` (transient activator success state), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/data.md` (session reset, clear draft on submit), `docs/architecture/decisions/backend.md` (`fetch` response handling), `docs/architecture/decisions/frontend.md` (transient activator success state), `requirements/mvp/implementation-heuristics.md` (heuristics 8, 10, 14), `docs/architecture/decisions/design-principles.md` (principles 2, 5, 6), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+
+---
+
+## [US-19] Persist in-progress feedback across navigation
+
+- [ ] While a feedback session is in progress (panel open, targeting active, recording active, or unsubmitted draft fields present), changes are persisted to `sessionStorage` under `flag-feedback:draft` (or `flag-feedback:draft:{sessionKey}` when `sessionKey` is configured).
+- [ ] After a full page reload in the same tab, calling `initFeedback` again restores the draft: comment text, category selection, element targets, interaction log, and recording state as applicable.
+- [ ] After the host application calls `destroy()` and later calls `initFeedback` again in the same tab (e.g. SPA route change), the draft is restored the same way as after reload.
+- [ ] If the user was in recording mode before reload or re-init, recording resumes: listeners are active again and new host interactions append to the restored log.
+- [ ] On successful submission (HTTP 2xx), the `sessionStorage` draft entry is removed.
+- [ ] On failed submission, the draft remains in `sessionStorage` so a reload does not lose the user's work.
+- [ ] Closing the browser tab clears the draft (tab-scoped storage); no cross-tab restore is required.
+
+**Relevant constraints:** `docs/architecture/decisions/data.md` (persistence module, restore, clear on submit), `requirements/mvp/architecture.md` (draft keys), `docs/architecture/decisions/backend.md` (optional `sessionKey`), `requirements/mvp/implementation-heuristics.md` (heuristics 3, 8, 9, 15), `docs/architecture/decisions/design-principles.md` (principles 2, 3, 5, 6)
 
 ---
 
@@ -200,7 +217,7 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] The host application is fully interactive during a recording session.
 - [ ] The recording indicator does not cover more than a small, fixed area of the viewport (it is not a full-screen overlay).
 
-**Relevant constraints:** `docs/architecture/decisions/frontend.md` (panel hide, fixed-position indicator), `docs/architecture/decisions/data.md` (recording sub-state), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/frontend.md` (panel hide, fixed-position indicator), `docs/architecture/decisions/data.md` (recording sub-state), `docs/architecture/decisions/design-principles.md` (principles 2, 3), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
 
 ---
 
@@ -211,4 +228,4 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 - [ ] After the feedback panel is closed (without activating either mode), the host application behaves as if the package were not present.
 - [ ] No global event listeners added by the package emit errors or side effects during normal application use.
 
-**Relevant constraints:** `docs/architecture/decisions/frontend.md` (`destroy()` cleanup, listener registration), `docs/architecture/decisions/data.md` (default idle state, mode-gated listeners), `docs/constitution.md` (Principle 4), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+**Relevant constraints:** `docs/architecture/decisions/frontend.md` (`destroy()` cleanup, listener registration), `docs/architecture/decisions/data.md` (default idle state, mode-gated listeners), `docs/constitution.md` (Principle 4), `requirements/mvp/implementation-heuristics.md` (heuristics 3, 9), `docs/architecture/decisions/design-principles.md` (principles 1, 3), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)

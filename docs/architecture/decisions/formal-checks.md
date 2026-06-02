@@ -13,7 +13,7 @@
 
 **Local hooks:** None for MVP — enforcement via GitHub Actions only (branch protection requires CI green).
 
-All tooling is **devDependencies** only (zero production runtime dependencies).
+All tooling is **devDependencies** only (zero production runtime dependencies; see `docs/constitution.md`, Principle 1).
 
 ## Consequences
 

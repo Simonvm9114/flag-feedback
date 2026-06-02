@@ -78,6 +78,9 @@ As a widget user, I want to see confirmation that my feedback was submitted succ
 
 ## Widget Behaviour
 
+**[US-19] Persist in-progress feedback across navigation**
+As a widget user, I want my in-progress feedback — including an active recording session — to be preserved when I navigate within the application or reload the page in the same browser tab, so that I do not lose work before I submit.
+
 **[US-17] Panel hides during recording**
 As a widget user, I want the feedback panel to hide automatically when I start recording so that I can interact with the application naturally without the panel obscuring the UI.
 

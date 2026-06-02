@@ -6,7 +6,7 @@
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Runner          | **Vitest** (Vite-aligned)                                                                                                                          |
 | DOM environment | **happy-dom**                                                                                                                                      |
-| MVP test types  | **Unit** (payload builder, state machine, validation, folding, selectors) and **component/DOM** (`initFeedback`, panel, modes with mocked `fetch`) |
+| MVP test types  | **Unit** and **component/DOM** per modules in `docs/architecture/decisions/data.md` (persistence, meaningful capture, draft restore; mocked `fetch`) |
 | E2E             | **Not in MVP CI** — defer Playwright/Cypress; manual or host-app checks for full AC                                                                |
 | CI              | `npm test` on every PR/push, before build (see `docs/architecture/decisions/hosting.md`)                                                           |
 | Coverage        | Not required in MVP CI                                                                                                                             |

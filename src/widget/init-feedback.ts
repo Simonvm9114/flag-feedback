@@ -5,6 +5,8 @@ import { createPortal, destroyPortal, type Portal } from './portal';
 import { createSession } from '../session/session';
 import { createFeedbackPanel, type FeedbackPanel } from './feedback-panel';
 import { createTargeting, type TargetingController } from '../targeting/targeting';
+import { createRecorder, type RecorderController } from '../recorder/recorder';
+import { createRecordingIndicator, type RecordingIndicator } from './recording-indicator';
 import { buildPackage } from '../payload/build-package';
 
 /** No-op widget instance returned when initialization fails validation. */
@@ -38,6 +40,24 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
   const session = createSession();
 
   let panel: FeedbackPanel | null = null;
+
+  const recorder: RecorderController = createRecorder({
+    portalContainer: portal.container,
+    activator: config.activator,
+    onInteraction(event) {
+      session.appendInteraction(event);
+    },
+  });
+
+  const recordingIndicator: RecordingIndicator = createRecordingIndicator({
+    shadowRoot: portal.shadowRoot,
+    onStop() {
+      recorder.stop();
+      session.exitRecording();
+      recordingIndicator.hide();
+      getPanel().show();
+    },
+  });
 
   const targeting: TargetingController = createTargeting({
     shadowRoot: portal.shadowRoot,
@@ -82,6 +102,18 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
         onRemoveTarget(index) {
           session.removeElementTarget(index);
         },
+        onEnterRecording() {
+          session.enterRecording();
+          panel?.hide();
+          recorder.start();
+          recordingIndicator.show();
+        },
+        onDiscardRecording() {
+          session.discardRecording();
+        },
+        getInteractionCount() {
+          return session.getSnapshot().interactions.length;
+        },
         onClose() {
           session.closePanel();
           panel?.hide();
@@ -118,6 +150,8 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
   return {
     destroy() {
       unbindActivator();
+      recorder.destroy();
+      recordingIndicator.destroy();
       targeting.destroy();
       panel?.destroy();
       destroyPortal(portal);

@@ -212,12 +212,45 @@
   right: 20px;
   width: var(--ff-panel-width);
   max-width: calc(100vw - 40px);
+  max-height: min(600px, calc(100vh - 40px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: var(--ff-z-overlay);
   display: none;
 }
 
 .ff-panel-overlay--visible {
   display: block;
+}
+
+/* ── Mobile bottom sheet ──────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .ff-panel-overlay {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
+  }
+
+  .ff-panel-overlay .ff-card {
+    border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
+  }
+
+  .ff-element-prompt {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .ff-element-prompt .ff-card {
+    border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
+  }
 }
 
 .ff-panel-header {
@@ -352,6 +385,104 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--ff-space-2);
+}
+
+/* ── Recording indicator ────────────────────────────────────────────────────── */
+
+.ff-recording-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ff-space-3);
+  height: 44px;
+  padding: 0 var(--ff-space-3) 0 var(--ff-space-4);
+  border-radius: var(--ff-radius-pill);
+  background: var(--ff-color-pill-surface);
+  color: var(--ff-color-pill-text);
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-base);
+  font-weight: var(--ff-font-weight-medium);
+  box-shadow: var(--ff-shadow-pill);
+  z-index: var(--ff-z-overlay);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ff-pill-dot--pulse {
+  animation: ff-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ff-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.ff-recording-stop {
+  height: 28px;
+  padding: 0 var(--ff-space-3);
+  border: none;
+  border-radius: var(--ff-radius-md);
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--ff-color-pill-text);
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-sm);
+  font-weight: var(--ff-font-weight-medium);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.ff-recording-stop:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ── Interaction summary in feedback panel ───────────────────────────────────── */
+
+.ff-interactions-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ff-space-2);
+  padding: var(--ff-space-2) var(--ff-space-3);
+  background: var(--ff-color-background);
+  border: 1px solid var(--ff-color-border-subtle);
+  border-radius: var(--ff-radius-md);
+  min-width: 0;
+}
+
+.ff-interactions-count {
+  font-size: var(--ff-font-size-sm);
+  color: var(--ff-color-text-secondary);
+  flex: 1;
+  min-width: 0;
+}
+
+.ff-interactions-discard {
+  flex-shrink: 0;
+  padding: 2px var(--ff-space-2);
+  border: none;
+  background: transparent;
+  color: var(--ff-color-text-muted);
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-sm);
+  cursor: pointer;
+  border-radius: var(--ff-radius-sm);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  white-space: nowrap;
+}
+
+.ff-interactions-discard:hover {
+  background: var(--ff-color-background-muted);
+  color: var(--ff-color-text);
 }
 
 /* ── Element targets list in feedback panel ────────────────────────────────── */

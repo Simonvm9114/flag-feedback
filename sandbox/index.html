@@ -455,14 +455,73 @@
         </p>
       </details>
 
-      <details>
-        <summary>
-          Batch 4 — Interaction recording <span class="muted">(not yet built)</span>
-        </summary>
+      <details open>
+        <summary>Batch 4 — Interaction recording</summary>
         <p>
-          Once Batch 4 ships: start recording, interact with the form and cards, then stop. Confirm
-          the interactions array in the POST payload (log below) contains the recorded events.
+          <strong>US-12 / US-17 Start recording:</strong> Click any activator to open the feedback
+          panel. Click <em>Start recording</em> — the panel must hide and a dark pill reading
+          "Recording" with a pulsing dot must appear bottom-left. Interact with the app (click
+          cards, scroll, type in the form fields below) — these should be captured. Confirm that
+          clicking the activator, the recording indicator itself, or the Stop button does
+          <em>not</em> appear in the interaction log.
         </p>
+        <p>
+          <strong>US-13 Stop recording:</strong> Click <em>Stop</em> on the recording indicator —
+          the panel must reopen showing "N interactions recorded". Click <em>Discard</em> — the
+          count resets to zero and the summary is hidden. Start a new recording from the panel to
+          confirm it works again.
+        </p>
+        <p>
+          <strong>Password &amp; ignore exclusions:</strong> While recording, type in the password
+          field and the ignored field below — neither should appear in the
+          <code>interactions</code> array in the POST payload.
+        </p>
+        <p>
+          <strong>Input coalescing:</strong> Type a sentence in the name field — the log should
+          contain one coalesced <code>input</code> entry, not one per keystroke.
+        </p>
+        <p>
+          <strong>Full submission:</strong> After stopping, fill a comment, select a category, and
+          submit. The intercepted POST in the log below must include a non-empty
+          <code>interactions</code> array and a <code>recordingStart</code> timestamp.
+        </p>
+        <div class="btn-row">
+          <button type="button" class="test-btn" id="batch4-reset">
+            Reset widget (re-init first activator)
+          </button>
+        </div>
+        <!-- Extra form fields for recording tests -->
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px">
+          <label style="font-size: 13px; display: flex; flex-direction: column; gap: 4px">
+            Password (must be excluded from recording)
+            <input
+              type="password"
+              id="batch4-password"
+              placeholder="Type here — must NOT appear in log"
+              style="
+                padding: 6px 8px;
+                border: 1px solid #d4d4d8;
+                border-radius: 4px;
+                font-size: 13px;
+              "
+            />
+          </label>
+          <label style="font-size: 13px; display: flex; flex-direction: column; gap: 4px">
+            Ignored field (data-flag-feedback-ignore — must be excluded)
+            <input
+              type="text"
+              data-flag-feedback-ignore
+              id="batch4-ignored"
+              placeholder="Type here — must NOT appear in log"
+              style="
+                padding: 6px 8px;
+                border: 1px solid #d4d4d8;
+                border-radius: 4px;
+                font-size: 13px;
+              "
+            />
+          </label>
+        </div>
       </details>
 
       <details>

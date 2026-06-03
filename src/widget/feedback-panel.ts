@@ -22,6 +22,10 @@ export type FeedbackPanelOptions = {
   onSubmit(data: { comment: string; category: FeedbackCategory }): Promise<void>;
   onEnterTargeting(): void;
   onRemoveTarget(index: number): void;
+  onEnterRecording(): void;
+  onDiscardRecording(): void;
+  /** Returns the current recorded interaction count. */
+  getInteractionCount(): number;
 };
 
 export type FeedbackPanel = {
@@ -95,6 +99,37 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   recordBtn.setAttribute('aria-label', 'Start a recording session');
 
   controlsRow.append(targetBtn, recordBtn);
+
+  // ── Interaction summary (shown after recording) ────────────────────────────
+  const interactionsSummary = document.createElement('div');
+  interactionsSummary.className = 'ff-interactions-summary';
+  interactionsSummary.hidden = true;
+
+  const interactionsCount = document.createElement('span');
+  interactionsCount.className = 'ff-interactions-count';
+
+  const discardBtn = document.createElement('button');
+  discardBtn.type = 'button';
+  discardBtn.className = 'ff-interactions-discard';
+  discardBtn.textContent = 'Discard';
+  discardBtn.setAttribute('aria-label', 'Discard recorded interactions');
+
+  interactionsSummary.append(interactionsCount, discardBtn);
+
+  discardBtn.addEventListener('click', () => {
+    options.onDiscardRecording();
+    interactionsSummary.hidden = true;
+  });
+
+  function renderInteractionsSummary(): void {
+    const count = options.getInteractionCount();
+    if (count > 0) {
+      interactionsCount.textContent = `${count} interaction${count === 1 ? '' : 's'} recorded`;
+      interactionsSummary.hidden = false;
+    } else {
+      interactionsSummary.hidden = true;
+    }
+  }
 
   // ── Element targets list ───────────────────────────────────────────────────
   const targetsSection = document.createElement('div');
@@ -184,6 +219,7 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
     commentField.field,
     categorySelect.fieldset,
     controlsRow,
+    interactionsSummary,
     targetsSection,
     submitBtn,
   );
@@ -193,6 +229,10 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   // ── Event handlers ─────────────────────────────────────────────────────────
   targetBtn.addEventListener('click', () => {
     options.onEnterTargeting();
+  });
+
+  recordBtn.addEventListener('click', () => {
+    options.onEnterRecording();
   });
 
   closeBtn.addEventListener('click', () => {
@@ -229,6 +269,7 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
       // Rebuild targets list from current session snapshot — handles both
       // returning from targeting mode and re-opening a draft with existing targets.
       renderTargets();
+      renderInteractionsSummary();
 
       overlay.classList.add('ff-panel-overlay--visible');
       commentField.textarea.focus();

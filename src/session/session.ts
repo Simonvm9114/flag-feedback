@@ -18,6 +18,10 @@ export type Session = {
   exitTargeting(): void;
   addElementTarget(target: ElementTarget): void;
   removeElementTarget(index: number): void;
+  enterRecording(): void;
+  exitRecording(): void;
+  appendInteraction(event: InteractionEvent): void;
+  discardRecording(): void;
   reset(): void;
 };
 
@@ -61,6 +65,28 @@ export function createSession(): Session {
     },
     removeElementTarget(index) {
       elementTargets = elementTargets.filter((_, i) => i !== index);
+    },
+    enterRecording() {
+      if (mode === 'panel') {
+        mode = 'recording';
+        recordingStart = Date.now();
+      }
+    },
+    exitRecording() {
+      if (mode === 'recording') mode = 'panel';
+    },
+    appendInteraction(event) {
+      const last = interactions[interactions.length - 1];
+      if (last && last.type === event.type && last.path === event.path) {
+        last.t = event.t;
+        last.count += 1;
+      } else {
+        interactions.push(event);
+      }
+    },
+    discardRecording() {
+      interactions = [];
+      recordingStart = null;
     },
     reset() {
       mode = 'idle';

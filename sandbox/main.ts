@@ -126,6 +126,15 @@ document.getElementById('meta-subset')?.addEventListener('click', () => {
   log('Initialized with only appId="sandbox-app"', 'ok');
 });
 
+// ── Batch 3: reset first activator widget ─────────────────────────────────
+document.getElementById('batch3-reset')?.addEventListener('click', () => {
+  const activator = document.querySelector<HTMLElement>('button.activator[data-placement="nav"]');
+  if (activator) {
+    initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
+    log('Widget re-initialized on nav activator', 'ok');
+  }
+});
+
 // ── Batch 2: Feedback panel & composition ─────────────────────────────────
 // US-07 truncation helper — opens the first panel if closed, then fills the textarea.
 document.getElementById('fill-long-comment')?.addEventListener('click', () => {

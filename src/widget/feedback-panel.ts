@@ -4,18 +4,24 @@ import { createHeading } from '../components/Heading';
 import { createTextarea } from '../components/Textarea';
 import { createCategorySelect } from '../components/CategorySelect';
 import { UI_KIT_STYLES } from '../ui/kit-styles';
-import type { FeedbackCategory } from '../config/types';
+import type { FeedbackCategory, ElementTarget } from '../config/types';
 
 export type FeedbackPanelOptions = {
   shadowRoot: ShadowRoot;
   /** Returns the current session draft so the form can be restored on open. */
-  getState(): { comment: string; category: FeedbackCategory | null };
+  getState(): {
+    comment: string;
+    category: FeedbackCategory | null;
+    elementTargets: ElementTarget[];
+  };
   /** Called on every textarea input so the session stays in sync. */
   onCommentChange(text: string): void;
   /** Called on every category change so the session stays in sync. */
   onCategoryChange(category: FeedbackCategory | null): void;
   onClose(): void;
   onSubmit(data: { comment: string; category: FeedbackCategory }): Promise<void>;
+  onEnterTargeting(): void;
+  onRemoveTarget(index: number): void;
 };
 
 export type FeedbackPanel = {
@@ -90,14 +96,105 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
 
   controlsRow.append(targetBtn, recordBtn);
 
+  // ── Element targets list ───────────────────────────────────────────────────
+  const targetsSection = document.createElement('div');
+  targetsSection.className = 'ff-targets-section';
+  targetsSection.hidden = true;
+
+  // Collapsible toggle header
+  const targetsToggle = document.createElement('button');
+  targetsToggle.type = 'button';
+  targetsToggle.className = 'ff-targets-toggle';
+  targetsToggle.setAttribute('aria-expanded', 'true');
+
+  const targetsLabelText = document.createElement('span');
+  targetsLabelText.className = 'ff-targets-label-text';
+
+  const targetsChevron = document.createElement('span');
+  targetsChevron.className = 'ff-targets-chevron';
+  targetsChevron.setAttribute('aria-hidden', 'true');
+  targetsChevron.textContent = '▾';
+
+  targetsToggle.append(targetsLabelText, targetsChevron);
+
+  const targetsList = document.createElement('ul');
+  targetsList.className = 'ff-targets-list';
+  targetsList.setAttribute('aria-label', 'Targeted elements');
+
+  targetsSection.append(targetsToggle, targetsList);
+
+  // Track collapse state across show() cycles
+  let targetsCollapsed = false;
+
+  targetsToggle.addEventListener('click', () => {
+    targetsCollapsed = !targetsCollapsed;
+    targetsToggle.setAttribute('aria-expanded', String(!targetsCollapsed));
+    targetsList.hidden = targetsCollapsed;
+  });
+
+  function renderTargets(): void {
+    const { elementTargets } = options.getState();
+    targetsList.innerHTML = '';
+
+    if (elementTargets.length > 0) {
+      targetsLabelText.textContent = `Element targets (${elementTargets.length.toString()})`;
+      elementTargets.forEach((target, index) => {
+        const item = document.createElement('li');
+        item.className = 'ff-target-item';
+
+        const content = document.createElement('div');
+        content.className = 'ff-target-item-content';
+
+        const path = document.createElement('span');
+        path.className = 'ff-target-path';
+        path.textContent = target.path;
+        path.title = target.path;
+
+        const comment = document.createElement('span');
+        comment.className = 'ff-target-comment';
+        comment.textContent = target.comment;
+
+        content.append(path, comment);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'ff-target-remove';
+        removeBtn.setAttribute('aria-label', 'Remove this target');
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => {
+          options.onRemoveTarget(index);
+          renderTargets();
+        });
+
+        item.append(content, removeBtn);
+        targetsList.appendChild(item);
+      });
+      targetsList.hidden = targetsCollapsed;
+      targetsSection.hidden = false;
+    } else {
+      targetsSection.hidden = true;
+    }
+  }
+
   // ── Submit button ──────────────────────────────────────────────────────────
   const submitBtn = createButton({ label: 'Submit feedback', variant: 'primary', type: 'submit' });
 
-  card.append(header, commentField.field, categorySelect.fieldset, controlsRow, submitBtn);
+  card.append(
+    header,
+    commentField.field,
+    categorySelect.fieldset,
+    controlsRow,
+    targetsSection,
+    submitBtn,
+  );
   overlay.append(card);
   options.shadowRoot.appendChild(overlay);
 
   // ── Event handlers ─────────────────────────────────────────────────────────
+  targetBtn.addEventListener('click', () => {
+    options.onEnterTargeting();
+  });
+
   closeBtn.addEventListener('click', () => {
     options.onClose();
   });
@@ -128,6 +225,11 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
         r.checked = r.value === state.category;
       });
       categorySelect.setError(null);
+
+      // Rebuild targets list from current session snapshot — handles both
+      // returning from targeting mode and re-opening a draft with existing targets.
+      renderTargets();
+
       overlay.classList.add('ff-panel-overlay--visible');
       commentField.textarea.focus();
     },

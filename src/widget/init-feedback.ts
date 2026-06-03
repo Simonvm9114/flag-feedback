@@ -4,6 +4,7 @@ import { logInitError } from '../logging';
 import { createPortal, destroyPortal, type Portal } from './portal';
 import { createSession } from '../session/session';
 import { createFeedbackPanel, type FeedbackPanel } from './feedback-panel';
+import { createTargeting, type TargetingController } from '../targeting/targeting';
 import { buildPackage } from '../payload/build-package';
 
 /** No-op widget instance returned when initialization fails validation. */
@@ -38,14 +39,33 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
 
   let panel: FeedbackPanel | null = null;
 
+  const targeting: TargetingController = createTargeting({
+    shadowRoot: portal.shadowRoot,
+    portalContainer: portal.container,
+    activator: config.activator,
+    onDone() {
+      targeting.exit();
+      session.exitTargeting();
+      getPanel().show();
+    },
+    onTargetAdded(target) {
+      session.addElementTarget(target);
+    },
+    getTargetCount() {
+      return session.getSnapshot().elementTargets.length;
+    },
+  });
+
   const getPanel = (): FeedbackPanel => {
     if (!panel) {
       panel = createFeedbackPanel({
         shadowRoot: portal.shadowRoot,
         getState() {
+          const snap = session.getSnapshot();
           return {
-            comment: session.getSnapshot().comment,
-            category: session.getSnapshot().category,
+            comment: snap.comment,
+            category: snap.category,
+            elementTargets: snap.elementTargets,
           };
         },
         onCommentChange(text) {
@@ -53,6 +73,14 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
         },
         onCategoryChange(category) {
           session.setCategory(category);
+        },
+        onEnterTargeting() {
+          session.enterTargeting();
+          panel?.hide();
+          targeting.enter();
+        },
+        onRemoveTarget(index) {
+          session.removeElementTarget(index);
         },
         onClose() {
           session.closePanel();
@@ -90,6 +118,7 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
   return {
     destroy() {
       unbindActivator();
+      targeting.destroy();
       panel?.destroy();
       destroyPortal(portal);
     },

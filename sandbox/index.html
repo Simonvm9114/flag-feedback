@@ -420,12 +420,38 @@
         </p>
       </details>
 
-      <details>
-        <summary>Batch 3 — Element targeting <span class="muted">(not yet built)</span></summary>
+      <!-- Batch 3 -->
+      <details open>
+        <summary>Batch 3 — Element targeting</summary>
         <p>
-          Once Batch 3 ships: enter targeting mode from the open panel, then click any card or form
-          element in the dashboard above. Confirm the element path is captured and shown in the
-          panel.
+          <strong>US-09 Activate targeting mode:</strong> Click an activator to open the panel.
+          Click <em>Target element</em> — the panel must hide and a dark pill reading "Targeting"
+          must appear bottom-left. Click <em>Done</em> in the pill — the panel must reopen with no
+          error.
+        </p>
+        <p>
+          <strong>US-10 Select element &amp; comment:</strong> While in targeting mode, click any
+          card, heading, or input in the dashboard. A blue outline must highlight the element and an
+          element-comment prompt must appear bottom-right. Type a comment and click
+          <em>Add target</em>. You must remain in targeting mode (pill still visible). Click
+          <em>Cancel</em> on a fresh selection — no target is added and you stay in targeting mode.
+          Confirm that clicking the activator button itself does NOT open the prompt.
+        </p>
+        <p>
+          <strong>US-11 Multiple targets &amp; submit:</strong> Add three or more element targets,
+          then click <em>Done</em> in the pill. The pill must show "Targeting · N selected" while in
+          targeting mode. Back in the panel, fill a comment, select a category, and submit — the
+          intercepted POST in the log below must contain an <code>elementTargets</code> array with
+          all the targets you added (each with <code>path</code> and <code>comment</code>).
+        </p>
+        <div class="btn-row">
+          <button type="button" class="test-btn" id="batch3-reset">
+            Reset widget (re-init first activator)
+          </button>
+        </div>
+        <p class="hint">
+          Clicking the activator element itself while in targeting mode must be ignored — no
+          self-referential target should appear.
         </p>
       </details>
 

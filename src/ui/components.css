@@ -286,3 +286,190 @@
   background: var(--ff-color-pill-accent);
   flex-shrink: 0;
 }
+
+/* ── Element targeting ─────────────────────────────────────────────────────── */
+
+.ff-targeting-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ff-space-3);
+  height: 44px;
+  padding: 0 var(--ff-space-3) 0 var(--ff-space-4);
+  border-radius: var(--ff-radius-pill);
+  background: var(--ff-color-pill-surface);
+  color: var(--ff-color-pill-text);
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-base);
+  font-weight: var(--ff-font-weight-medium);
+  box-shadow: var(--ff-shadow-pill);
+  z-index: var(--ff-z-overlay);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ff-targeting-done {
+  height: 28px;
+  padding: 0 var(--ff-space-3);
+  border: none;
+  border-radius: var(--ff-radius-md);
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--ff-color-pill-text);
+  font-family: var(--ff-font-family);
+  font-size: var(--ff-font-size-sm);
+  font-weight: var(--ff-font-weight-medium);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.ff-targeting-done:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.ff-highlight-overlay {
+  position: fixed;
+  pointer-events: none;
+  outline: 2px solid var(--ff-color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+  background: rgba(99, 102, 241, 0.08);
+  z-index: calc(var(--ff-z-overlay) - 1);
+}
+
+.ff-element-prompt {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: var(--ff-panel-width);
+  max-width: calc(100vw - 40px);
+  z-index: var(--ff-z-overlay);
+}
+
+.ff-element-prompt-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ff-space-2);
+}
+
+/* ── Element targets list in feedback panel ────────────────────────────────── */
+
+.ff-targets-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ff-space-2);
+  min-width: 0;
+}
+
+/* Collapsible toggle header */
+.ff-targets-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--ff-font-family);
+  text-align: left;
+}
+
+.ff-targets-label-text {
+  font-size: var(--ff-font-size-sm);
+  font-weight: var(--ff-font-weight-medium);
+  color: var(--ff-color-text-secondary);
+}
+
+.ff-targets-chevron {
+  font-size: 12px;
+  color: var(--ff-color-text-muted);
+  transition: transform 0.15s ease;
+  line-height: 1;
+}
+
+.ff-targets-toggle[aria-expanded='false'] .ff-targets-chevron {
+  transform: rotate(-90deg);
+}
+
+/* Scrollable list — capped so the panel never grows past the viewport */
+.ff-targets-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ff-space-2);
+  max-height: 180px;
+  overflow-y: auto;
+  /* Subtle inset shadow to signal scrollability */
+  scrollbar-width: thin;
+  scrollbar-color: var(--ff-color-border) transparent;
+}
+
+/* Each target row */
+.ff-target-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ff-space-2);
+  padding: var(--ff-space-2) var(--ff-space-3);
+  background: var(--ff-color-background);
+  border: 1px solid var(--ff-color-border-subtle);
+  border-radius: var(--ff-radius-md);
+  min-width: 0;
+}
+
+.ff-target-item-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ff-space-1);
+}
+
+.ff-target-path {
+  display: block;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--ff-color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ff-target-comment {
+  display: block;
+  font-size: var(--ff-font-size-sm);
+  color: var(--ff-color-text);
+  line-height: var(--ff-line-height-normal);
+  overflow-wrap: break-word;
+}
+
+/* Per-item remove button */
+.ff-target-remove {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--ff-color-text-muted);
+  cursor: pointer;
+  border-radius: var(--ff-radius-sm);
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  font-family: inherit;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.ff-target-remove:hover {
+  background: var(--ff-color-background-muted);
+  color: var(--ff-color-text);
+}

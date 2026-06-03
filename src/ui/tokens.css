@@ -14,6 +14,13 @@
   box-sizing: border-box;
 }
 
+/* Ensure the [hidden] attribute always wins over component display rules.
+   Without this, class-level display values (flex, block, etc.) override
+   the UA stylesheet's [hidden]{display:none} since they share specificity. */
+[hidden] {
+  display: none !important;
+}
+
 .ff-root {
   /* Color — primary */
   --ff-color-primary: #6366f1;

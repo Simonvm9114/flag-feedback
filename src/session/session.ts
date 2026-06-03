@@ -14,6 +14,10 @@ export type Session = {
   closePanel(): void;
   setComment(text: string): void;
   setCategory(category: FeedbackCategory | null): void;
+  enterTargeting(): void;
+  exitTargeting(): void;
+  addElementTarget(target: ElementTarget): void;
+  removeElementTarget(index: number): void;
   reset(): void;
 };
 
@@ -45,6 +49,18 @@ export function createSession(): Session {
     },
     setCategory(cat) {
       category = cat;
+    },
+    enterTargeting() {
+      if (mode === 'panel') mode = 'targeting';
+    },
+    exitTargeting() {
+      if (mode === 'targeting') mode = 'panel';
+    },
+    addElementTarget(target) {
+      elementTargets = [...elementTargets, target];
+    },
+    removeElementTarget(index) {
+      elementTargets = elementTargets.filter((_, i) => i !== index);
     },
     reset() {
       mode = 'idle';

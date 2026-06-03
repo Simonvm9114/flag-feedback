@@ -87,10 +87,14 @@ if (typeof initFeedback === 'function') {
 
 // ── US-02: Activator placement ─────────────────────────────────────────────
 
-// Bind activators already in the markup (nav + aside)
+// Bind activators already in the markup (nav + aside).
+// The nav instance is stored so Batch 6 SPA-navigate simulation can destroy + re-init it.
+let navInstance: ReturnType<typeof initFeedback> | null = null;
+
 for (const el of document.querySelectorAll<HTMLElement>('[data-activator]')) {
-  initFeedback({ activator: el, endpoint: 'https://example.com/api/feedback' });
+  const instance = initFeedback({ activator: el, endpoint: 'https://example.com/api/feedback' });
   const placement = el.dataset.placement ?? el.parentElement?.tagName.toLowerCase();
+  if (el.dataset.placement === 'nav') navInstance = instance;
   log(`Activator bound — placed in <${placement}>`, 'ok');
 }
 
@@ -186,9 +190,60 @@ document.getElementById('batch5-respond-ok')?.addEventListener('click', () => {
 document.getElementById('batch4-reset')?.addEventListener('click', () => {
   const activator = document.querySelector<HTMLElement>('button.activator[data-placement="nav"]');
   if (activator) {
-    initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
+    navInstance = initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
     log('Widget re-initialized on nav activator', 'ok');
   }
+});
+
+// ── Batch 6: idle & draft persistence ─────────────────────────────────────
+
+document.getElementById('batch6-read-draft')?.addEventListener('click', () => {
+  const keys = ['flag-feedback:draft', 'flag-feedback:draft:spa-test'];
+  let found = false;
+  for (const key of keys) {
+    const raw = sessionStorage.getItem(key);
+    if (raw) {
+      log(`sessionStorage["${key}"] = ${raw}`, 'info');
+      found = true;
+    }
+  }
+  if (!found) log('No draft found in sessionStorage (checked default + spa-test keys)', 'info');
+});
+
+document.getElementById('batch6-clear-draft')?.addEventListener('click', () => {
+  sessionStorage.removeItem('flag-feedback:draft');
+  sessionStorage.removeItem('flag-feedback:draft:spa-test');
+  log('Draft cleared from sessionStorage', 'ok');
+});
+
+document.getElementById('batch6-simulate-spa')?.addEventListener('click', () => {
+  const activator = document.querySelector<HTMLElement>('button.activator[data-placement="nav"]');
+  if (!activator) {
+    log('Nav activator not found', 'error');
+    return;
+  }
+  navInstance?.destroy();
+  log('Widget destroyed (SPA unmount)', 'info');
+  navInstance = initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
+  log('Widget re-initialized (SPA remount) — draft should restore if present', 'ok');
+});
+
+document.getElementById('batch6-sessionkey-test')?.addEventListener('click', () => {
+  const activator = document.querySelector<HTMLElement>('button.activator[data-placement="nav"]');
+  if (!activator) {
+    log('Nav activator not found', 'error');
+    return;
+  }
+  navInstance?.destroy();
+  navInstance = initFeedback({
+    activator,
+    endpoint: 'https://example.com/api/feedback',
+    sessionKey: 'spa-test',
+  });
+  log(
+    'Widget initialized with sessionKey="spa-test" → storage key: flag-feedback:draft:spa-test',
+    'ok',
+  );
 });
 
 // ── Batch 2: Feedback panel & composition ─────────────────────────────────

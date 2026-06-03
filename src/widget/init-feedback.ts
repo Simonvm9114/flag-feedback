@@ -8,6 +8,7 @@ import { createTargeting, type TargetingController } from '../targeting/targetin
 import { createRecorder, type RecorderController } from '../recorder/recorder';
 import { createRecordingIndicator, type RecordingIndicator } from './recording-indicator';
 import { buildPackage } from '../payload/build-package';
+import { createPersistence, type PersistenceController } from '../persistence/persistence';
 
 /** No-op widget instance returned when initialization fails validation. */
 const FAILED_INSTANCE: WidgetInstance = {
@@ -47,14 +48,28 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
 
   const portal: Portal = createPortal();
   const session = createSession();
+  const persistence: PersistenceController = createPersistence(config.sessionKey);
 
   let panel: FeedbackPanel | null = null;
+
+  function saveDraft(): void {
+    const snap = session.getSnapshot();
+    persistence.save({
+      mode: session.getMode(),
+      comment: snap.comment,
+      category: snap.category,
+      elementTargets: snap.elementTargets,
+      interactions: snap.interactions,
+      recordingStart: snap.recordingStart,
+    });
+  }
 
   const recorder: RecorderController = createRecorder({
     portalContainer: portal.container,
     activator: config.activator,
     onInteraction(event) {
       session.appendInteraction(event);
+      saveDraft();
     },
   });
 
@@ -63,6 +78,7 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
     onStop() {
       recorder.stop();
       session.exitRecording();
+      saveDraft();
       recordingIndicator.hide();
       getPanel().show();
     },
@@ -75,10 +91,12 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
     onDone() {
       targeting.exit();
       session.exitTargeting();
+      saveDraft();
       getPanel().show();
     },
     onTargetAdded(target) {
       session.addElementTarget(target);
+      saveDraft();
     },
     getTargetCount() {
       return session.getSnapshot().elementTargets.length;
@@ -99,32 +117,39 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
         },
         onCommentChange(text) {
           session.setComment(text);
+          saveDraft();
         },
         onCategoryChange(category) {
           session.setCategory(category);
+          saveDraft();
         },
         onEnterTargeting() {
           session.enterTargeting();
+          saveDraft();
           panel?.hide();
           targeting.enter();
         },
         onRemoveTarget(index) {
           session.removeElementTarget(index);
+          saveDraft();
         },
         onEnterRecording() {
           session.enterRecording();
+          saveDraft();
           panel?.hide();
           recorder.start();
           recordingIndicator.show();
         },
         onDiscardRecording() {
           session.discardRecording();
+          saveDraft();
         },
         getInteractionCount() {
           return session.getSnapshot().interactions.length;
         },
         onClose() {
           session.closePanel();
+          saveDraft();
           panel?.hide();
         },
         async onSubmit({ comment, category }) {
@@ -146,6 +171,7 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
           }
           // Clear draft only on successful submission (data.md: "When cleared: successful submission only")
           session.reset();
+          persistence.clear();
           panel?.hide();
           showActivatorSuccess(config.activator);
         },
@@ -154,6 +180,24 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
     return panel;
   };
 
+  // Restore draft from a previous session (reload or SPA destroy+reinit) — data.md persistence rules.
+  const draft = persistence.load();
+  if (draft) {
+    // Targeting is a transient UI state that cannot be visually restored; treat it as panel.
+    // Submitting mid-reload is treated the same way — reopen to panel so the user can retry.
+    const restoreMode =
+      draft.mode === 'targeting' || draft.mode === 'submitting' ? 'panel' : draft.mode;
+    session.restoreFrom({ ...draft, mode: restoreMode });
+
+    if (restoreMode === 'recording') {
+      recorder.start();
+      recordingIndicator.show();
+    } else if (restoreMode === 'panel') {
+      getPanel().show();
+    }
+    // 'idle' mode: fields loaded into session; panel opens normally via activator click.
+  }
+
   const unbindActivator = bindActivator(
     config.activator,
     () => session.getMode() === 'idle',
@@ -161,6 +205,7 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
       // Do NOT reset session here — draft is preserved between open/close cycles.
       // Session is only cleared after a successful submit.
       session.openPanel();
+      saveDraft();
       getPanel().show();
     },
   );

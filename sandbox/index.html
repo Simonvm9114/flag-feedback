@@ -568,14 +568,65 @@
         <p id="batch5-mode-label" class="hint">Current fetch mode: <strong>200 OK</strong></p>
       </details>
 
-      <details>
-        <summary>
-          Batch 6 — Idle &amp; draft persistence <span class="muted">(not yet built)</span>
-        </summary>
+      <details open>
+        <summary>Batch 6 — Idle &amp; draft persistence</summary>
+
         <p>
-          Once Batch 6 ships: start typing in the panel, refresh the page — confirm the draft is
-          restored. Also leave the panel open without interaction and confirm it closes after the
-          idle timeout.
+          <strong>US-18 — Idle behaviour:</strong> On page load, no targeting or recording listeners
+          should be active. Interact with the app (click cards, type in form fields) — nothing
+          should be intercepted. Open the panel and close it with ×; normal app interaction must
+          resume unchanged. Verify in DevTools that no <code>click</code> capture listener from this
+          package is attached when the panel is closed.
+        </p>
+
+        <p>
+          <strong>US-19 — Draft persistence (reload):</strong>
+          Open the feedback panel, type a comment, select a category. Click "Read draft" below — the
+          sessionStorage entry should appear in the log. Reload the page — the panel should reopen
+          automatically with the draft restored. Submit successfully — reload again and the panel
+          must be blank (draft cleared).
+        </p>
+
+        <p>
+          <strong>US-19 — Failed submit preserves draft:</strong> Click "Force 500" in Batch 5,
+          submit feedback. After the error, click "Read draft" — the draft must still be in
+          sessionStorage. Reload — the panel should reopen with the draft intact.
+        </p>
+
+        <p>
+          <strong>US-19 — Recording resumes after reload:</strong> Open the panel, click "Start
+          recording", interact with the app. Click "Reload" (F5). The recording indicator must
+          reappear and new interactions must append to the restored log. Stop recording and submit —
+          the POST must include the full interaction history.
+        </p>
+
+        <p>
+          <strong>US-19 — SPA navigate (destroy + re-init):</strong> Open the panel, type a comment.
+          Click "Simulate SPA navigate" below — the widget is destroyed and re-initialized in the
+          same tab. The panel must reopen with the draft restored. Same test for recording mode:
+          start recording, click "Simulate SPA navigate" — the recording indicator must reappear and
+          new interactions append.
+        </p>
+
+        <p>
+          <strong>US-19 — sessionKey:</strong> Click "Init with sessionKey" below. Open the panel
+          and type a comment. Click "Read draft" — the entry must be under
+          <code>flag-feedback:draft:spa-test</code>, not the default key.
+        </p>
+
+        <div class="btn-row">
+          <button type="button" class="test-btn" id="batch6-read-draft">Read draft</button>
+          <button type="button" class="test-btn" id="batch6-clear-draft">Clear draft</button>
+          <button type="button" class="test-btn" id="batch6-simulate-spa">
+            Simulate SPA navigate (destroy + re-init)
+          </button>
+          <button type="button" class="test-btn" id="batch6-sessionkey-test">
+            Init with sessionKey="spa-test"
+          </button>
+        </div>
+        <p class="hint">
+          "Read draft" checks both <code>flag-feedback:draft</code> and
+          <code>flag-feedback:draft:spa-test</code> in sessionStorage and prints them to the log.
         </p>
       </details>
     </div>

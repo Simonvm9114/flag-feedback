@@ -20,3 +20,9 @@ This project is built and supported by the Greenfield MVP Template — an AI-nat
 # Phase 6 — MVP Build
 
 This project is in Phase 6. The full documentation package is in place — requirements, architecture, best practices, a working skeleton, and a UI kit. The goal of this phase is to build and refine the MVP in staged batches — each one implemented, verified, and approved before the next begins.
+
+---
+
+## Active Command
+
+`/project:build-batch-6` is currently running.

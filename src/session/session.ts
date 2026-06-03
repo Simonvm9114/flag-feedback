@@ -23,6 +23,15 @@ export type Session = {
   appendInteraction(event: InteractionEvent): void;
   discardRecording(): void;
   reset(): void;
+  /** Restores all fields directly, bypassing state-machine guards. Used by the persistence layer on init. */
+  restoreFrom(draft: {
+    mode: SessionMode;
+    comment: string;
+    category: FeedbackCategory | null;
+    elementTargets: ElementTarget[];
+    interactions: InteractionEvent[];
+    recordingStart: number | null;
+  }): void;
 };
 
 export function createSession(): Session {
@@ -95,6 +104,14 @@ export function createSession(): Session {
       elementTargets = [];
       interactions = [];
       recordingStart = null;
+    },
+    restoreFrom(draft) {
+      mode = draft.mode;
+      comment = draft.comment;
+      category = draft.category;
+      elementTargets = [...draft.elementTargets];
+      interactions = [...draft.interactions];
+      recordingStart = draft.recordingStart;
     },
   };
 }

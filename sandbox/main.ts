@@ -24,8 +24,25 @@ console.error = (...args: unknown[]) => {
   log(args.map(String).join(' '), 'error');
 };
 
+// ── Batch 5 fetch mode ────────────────────────────────────────────────────────
+type FetchMode = 'ok' | 'fail-500' | 'network-error';
+let fetchMode: FetchMode = 'ok';
+
+function setFetchMode(mode: FetchMode): void {
+  fetchMode = mode;
+  const label = document.getElementById('batch5-mode-label');
+  if (label) {
+    const text =
+      mode === 'ok'
+        ? '200 OK'
+        : mode === 'fail-500'
+          ? '500 (next submit will fail)'
+          : 'network error (next submit will throw)';
+    label.innerHTML = `Current fetch mode: <strong>${text}</strong>`;
+  }
+}
+
 // Intercept fetch — log the outgoing POST payload without actually sending it.
-// Replace with a real endpoint (or remove this override) when you want live submission tests.
 window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const url = input instanceof Request ? input.url : String(input);
   const method = (init?.method ?? 'GET').toUpperCase();
@@ -36,6 +53,20 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Res
     } catch {
       log(String(init.body), 'info');
     }
+  }
+
+  const mode = fetchMode;
+  // After one forced failure, revert to normal so retry succeeds
+  if (mode !== 'ok') setFetchMode('ok');
+
+  if (mode === 'network-error') {
+    throw new TypeError('Failed to fetch (simulated network error)');
+  }
+  if (mode === 'fail-500') {
+    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
@@ -133,6 +164,22 @@ document.getElementById('batch3-reset')?.addEventListener('click', () => {
     initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
     log('Widget re-initialized on nav activator', 'ok');
   }
+});
+
+// ── Batch 5: fetch mode controls ──────────────────────────────────────────
+document.getElementById('batch5-force-500')?.addEventListener('click', () => {
+  setFetchMode('fail-500');
+  log('Next submit will return HTTP 500', 'info');
+});
+
+document.getElementById('batch5-force-network')?.addEventListener('click', () => {
+  setFetchMode('network-error');
+  log('Next submit will throw a network error', 'info');
+});
+
+document.getElementById('batch5-respond-ok')?.addEventListener('click', () => {
+  setFetchMode('ok');
+  log('Fetch mode reset to 200 OK', 'ok');
 });
 
 // ── Batch 4: reset first activator widget ─────────────────────────────────

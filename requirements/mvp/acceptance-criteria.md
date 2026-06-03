@@ -231,6 +231,19 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 
 ---
 
+## [US-21] Use the feedback panel on a mobile device
+
+- [ ] The feedback panel renders without horizontal scrolling or clipped controls on a viewport 320 CSS pixels wide.
+- [ ] All interactive controls — comment text area, category selector, element-targeting control, recording control, and submit button — are fully reachable and operable without a mouse.
+- [ ] All tappable targets (buttons, controls, the recording indicator) meet a minimum touch-target size of 44×44 CSS pixels.
+- [ ] The panel does not occupy the full viewport height on a typical mobile screen; the host application is partially visible behind or around the panel.
+- [ ] The recording indicator remains accessible and tappable on a small-screen viewport.
+- [ ] Element-targeting mode can be activated and a target selected on a touch device (tap-to-target).
+
+**Relevant constraints:** `docs/constitution.md` (Principle 8 — responsive panel, 320px minimum, adequate touch targets), `docs/architecture/decisions/frontend.md` (Shadow Root portal, responsive layout in Consequences), `requirements/mvp/implementation-heuristics.md` (heuristic 17), `docs/architecture/decisions/design-principles.md` (principle 6 — fault containment; partial viewport is host-non-destructive)
+
+---
+
 ## [US-18] Application interaction is unaffected outside active modes
 
 - [ ] On page load, element-targeting mode is not active; clicks in the host application are not intercepted.

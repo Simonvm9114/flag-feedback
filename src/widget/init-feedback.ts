@@ -14,6 +14,15 @@ const FAILED_INSTANCE: WidgetInstance = {
   destroy() {},
 };
 
+/** Appends a transient ✓ child node to the activator for ~2 seconds. No styles applied. */
+function showActivatorSuccess(activator: HTMLElement): void {
+  const indicator = document.createElement('span');
+  indicator.setAttribute('data-ff-success', '');
+  indicator.textContent = ' ✓';
+  activator.appendChild(indicator);
+  setTimeout(() => indicator.remove(), 2000);
+}
+
 /** Binds the activator click listener; opens the panel when idle. */
 function bindActivator(
   activator: HTMLElement,
@@ -122,14 +131,23 @@ export function initFeedback(config: InitFeedbackConfig): WidgetInstance {
           session.setComment(comment);
           session.setCategory(category);
           const pkg = buildPackage(session.getSnapshot(), config);
-          await fetch(config.endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(pkg),
-          });
+          let response: Response;
+          try {
+            response = await fetch(config.endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(pkg),
+            });
+          } catch {
+            throw new Error('network');
+          }
+          if (!response.ok) {
+            throw new Error('server');
+          }
           // Clear draft only on successful submission (data.md: "When cleared: successful submission only")
           session.reset();
           panel?.hide();
+          showActivatorSuccess(config.activator);
         },
       });
     }

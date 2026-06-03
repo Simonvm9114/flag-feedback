@@ -188,6 +188,18 @@ Orientation for Phase 6. Grounded in `docs/architecture.md`, `docs/architecture/
 
 ---
 
+### 17. Design panel UI for small touchscreen viewports
+
+**Signal:** Any new panel control, button, overlay, or layout element.
+
+**Response:** Use a single-column layout with relative units that fits a 320px viewport without horizontal scrolling; size all tappable targets to at least 44×44 CSS pixels; keep the panel height short enough that the host application is partially visible behind it on a typical mobile screen.
+
+**Example:** Category buttons stacked vertically on narrow screens; recording indicator anchored to a corner at a fixed size that does not obscure central host content on small screens.
+
+**Cost if ignored:** `docs/constitution.md` Principle 8 fails — widget is unusable on mobile phones for super users and clients accessing host applications from handheld devices (see `requirements/mvp/user-stories.md`, US-21).
+
+---
+
 ### 16. Never POST except on explicit submit to the configured endpoint
 
 **Signal:** Any `fetch` or network call.

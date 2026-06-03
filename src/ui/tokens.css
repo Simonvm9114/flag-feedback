@@ -45,6 +45,7 @@
   --ff-color-success: #059669;
   --ff-color-success-strong: #22c55e;
   --ff-color-error: #dc2626;
+  --ff-color-error-subtle: #fff5f5;
 
   /* Color — mode indicator pill */
   --ff-color-pill-surface: #111111;

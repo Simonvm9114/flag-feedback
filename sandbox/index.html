@@ -524,14 +524,48 @@
         </div>
       </details>
 
-      <details>
-        <summary>Batch 5 — Submission <span class="muted">(not yet built)</span></summary>
+      <details open>
+        <summary>Batch 5 — Submission</summary>
         <p>
-          Once Batch 5 ships: fill in feedback and click Submit. The intercepted POST payload
-          appears in the log — confirm <code>id</code>, <code>timestamp</code>, <code>app</code>,
-          <code>device</code>, <code>feedback</code>, <code>elementTargets</code>, and
-          <code>interactions</code> are all present.
+          <strong>US-14 Combined package:</strong> Open the panel, write a comment, select a
+          category, add at least one element target and record some interactions, then submit. The
+          POST payload in the log below must contain <code>feedback.text</code>,
+          <code>feedback.category</code>, a non-empty <code>elementTargets</code> array, and a
+          non-empty <code>interactions</code> array. Exactly one POST must fire.
         </p>
+        <p>
+          <strong>US-15 Comment + category only:</strong> Open the panel, write a comment, select a
+          category (no targeting, no recording), and submit. The POST payload must include
+          <code>elementTargets: []</code> and <code>interactions: []</code>. No error or warning
+          must appear.
+        </p>
+        <p>
+          <strong>US-16 Success:</strong> Submit feedback — the panel must close and the activator
+          must briefly show a ✓ indicator for ~2 seconds. The panel must reopen blank (comment
+          cleared, no category selected).
+        </p>
+        <p>
+          <strong>US-16 Error — server failure:</strong> Click "Force next submit to fail (500)"
+          below, then submit feedback. The panel must stay open and show an inline error message
+          with a retry button. The comment and category must be preserved. Click "Try again" — the
+          POST should retry; if "Respond normally" is set it will succeed.
+        </p>
+        <p>
+          <strong>US-16 Error — network error:</strong> Click "Force next submit to throw network
+          error" below, then submit. Same error behaviour expected.
+        </p>
+        <div class="btn-row">
+          <button type="button" class="test-btn" id="batch5-force-500">
+            Force next submit to fail (500)
+          </button>
+          <button type="button" class="test-btn" id="batch5-force-network">
+            Force next submit to throw network error
+          </button>
+          <button type="button" class="test-btn" id="batch5-respond-ok">
+            Respond normally (200)
+          </button>
+        </div>
+        <p id="batch5-mode-label" class="hint">Current fetch mode: <strong>200 OK</strong></p>
       </details>
 
       <details>

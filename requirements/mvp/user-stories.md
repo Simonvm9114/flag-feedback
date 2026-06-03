@@ -89,3 +89,6 @@ As a widget user, I want normal application clicks and interactions to work with
 
 **[US-20] Keep draft when panel is dismissed**
 As a widget user, I want my in-progress comment and category selection to be preserved if I close the feedback panel without submitting, so that I can dismiss the panel temporarily and return to it without losing what I have written.
+
+**[US-21] Use the feedback panel on a mobile device**
+As a widget user on a mobile phone, I want the feedback panel to be fully usable on a small touchscreen so that I can compose and submit feedback without needing a desktop or laptop.

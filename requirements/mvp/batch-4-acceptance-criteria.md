@@ -45,3 +45,18 @@ Interaction recording (US-12, US-13, US-17). Criteria are evaluated against the 
 - [ ] The recording indicator does not cover more than a small, fixed area of the viewport (it is not a full-screen overlay).
 
 **Relevant constraints:** `docs/architecture/decisions/frontend.md` (panel hide, fixed-position indicator), `docs/architecture/decisions/data.md` (recording sub-state), `docs/architecture/decisions/design-principles.md` (principles 2, 3), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+
+---
+
+## [US-21] Use the feedback panel on a mobile device
+
+Implemented as part of Batch 4 — the responsive panel layout was added alongside the recording indicator work.
+
+- [x] The feedback panel renders without horizontal scrolling or clipped controls on a viewport 320 CSS pixels wide.
+- [x] All interactive controls — comment text area, category selector, element-targeting control, recording control, and submit button — are fully reachable and operable without a mouse.
+- [x] All tappable targets (buttons, controls, the recording indicator) meet a minimum touch-target size of 44×44 CSS pixels.
+- [x] The panel does not occupy the full viewport height on a typical mobile screen; the host application is partially visible behind or around the panel.
+- [x] The recording indicator remains accessible and tappable on a small-screen viewport.
+- [x] Element-targeting mode can be activated and a target selected on a touch device (tap-to-target).
+
+**Relevant constraints:** `docs/constitution.md` (Principle 8 — responsive panel, 320px minimum, adequate touch targets), `docs/architecture/decisions/frontend.md` (Shadow Root portal, responsive layout in Consequences), `requirements/mvp/implementation-heuristics.md` (heuristic 17), `docs/architecture/decisions/design-principles.md` (principle 6)

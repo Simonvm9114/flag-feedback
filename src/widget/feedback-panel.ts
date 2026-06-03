@@ -214,6 +214,22 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   // ── Submit button ──────────────────────────────────────────────────────────
   const submitBtn = createButton({ label: 'Submit feedback', variant: 'primary', type: 'submit' });
 
+  // ── Submit error area ──────────────────────────────────────────────────────
+  const errorArea = document.createElement('div');
+  errorArea.className = 'ff-submit-error';
+  errorArea.hidden = true;
+  errorArea.setAttribute('role', 'alert');
+
+  const errorMsg = document.createElement('span');
+  errorMsg.className = 'ff-submit-error-msg';
+
+  const retryBtn = document.createElement('button');
+  retryBtn.type = 'button';
+  retryBtn.className = 'ff-submit-retry';
+  retryBtn.textContent = 'Try again';
+
+  errorArea.append(errorMsg, retryBtn);
+
   card.append(
     header,
     commentField.field,
@@ -222,9 +238,33 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
     interactionsSummary,
     targetsSection,
     submitBtn,
+    errorArea,
   );
   overlay.append(card);
   options.shadowRoot.appendChild(overlay);
+
+  // ── Shared submit logic ────────────────────────────────────────────────────
+  function doSubmit(): void {
+    const category = categorySelect.getValue();
+    if (!category) {
+      categorySelect.setError('Please select a category.');
+      return;
+    }
+    const comment = commentField.textarea.value;
+    errorArea.hidden = true;
+    submitBtn.disabled = true;
+    retryBtn.disabled = true;
+    options
+      .onSubmit({ comment, category })
+      .catch(() => {
+        errorMsg.textContent = 'Could not send feedback.';
+        errorArea.hidden = false;
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        retryBtn.disabled = false;
+      });
+  }
 
   // ── Event handlers ─────────────────────────────────────────────────────────
   targetBtn.addEventListener('click', () => {
@@ -239,18 +279,8 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
     options.onClose();
   });
 
-  submitBtn.addEventListener('click', () => {
-    const category = categorySelect.getValue();
-    if (!category) {
-      categorySelect.setError('Please select a category.');
-      return;
-    }
-    const comment = commentField.textarea.value;
-    submitBtn.disabled = true;
-    void options.onSubmit({ comment, category }).finally(() => {
-      submitBtn.disabled = false;
-    });
-  });
+  submitBtn.addEventListener('click', doSubmit);
+  retryBtn.addEventListener('click', doSubmit);
 
   // ── Show / hide ────────────────────────────────────────────────────────────
   return {

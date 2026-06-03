@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>flag-feedback — sandbox</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font: 14px/1.5 system-ui, sans-serif;
+        background: #f5f5f5;
+        color: #1a1a1a;
+      }
+
+      /* ── App frame ───────────────────────────────────── */
+      .app-nav {
+        background: #1a1a2e;
+        color: #fff;
+        padding: 0 20px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .app-nav .logo {
+        font-weight: 600;
+        margin-right: auto;
+      }
+
+      .app-layout {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 16px;
+        padding: 16px 20px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .app-main,
+      .app-sidebar {
+        background: #fff;
+        border-radius: 8px;
+        padding: 18px;
+      }
+
+      /* ── Targetable content cards (batch 3+) ─────────── */
+      .card {
+        border: 1px solid #e4e4e7;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 10px;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 14px;
+      }
+      .card p {
+        margin: 0;
+        color: #71717a;
+        font-size: 13px;
+      }
+
+      /* ── Activator — host-owned styles ───────────────── */
+      button.activator {
+        background: #4f46e5;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 14px;
+        cursor: pointer;
+        font-size: 13px;
+        font-family: inherit;
+      }
+      button.activator:hover {
+        background: #4338ca;
+      }
+
+      /* ── Test controls ───────────────────────────────── */
+      .controls {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px 16px;
+      }
+      .controls details {
+        background: #fff;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        padding: 12px 16px;
+        border: 1px solid #e4e4e7;
+      }
+      .controls summary {
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 13px;
+        user-select: none;
+      }
+      .controls p {
+        margin: 8px 0 0;
+        font-size: 13px;
+      }
+      .hint {
+        color: #71717a;
+        font-size: 12px;
+        margin: 6px 0 0 !important;
+      }
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .test-btn {
+        background: #f4f4f5;
+        border: 1px solid #d4d4d8;
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 12px;
+        font-family: inherit;
+      }
+      .test-btn:hover {
+        background: #e4e4e7;
+      }
+      .test-btn.valid {
+        border-color: #16a34a;
+      }
+      .test-btn.invalid {
+        border-color: #dc2626;
+      }
+      .muted {
+        color: #a1a1aa;
+        font-weight: 400;
+      }
+
+      /* ── Log panel ───────────────────────────────────── */
+      .log-panel {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 20px 24px;
+      }
+      .log-panel h2 {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #71717a;
+        margin: 0 0 6px;
+      }
+      #log-output {
+        background: #18181b;
+        color: #d4d4d8;
+        border-radius: 8px;
+        padding: 12px 14px;
+        min-height: 120px;
+        max-height: 320px;
+        overflow-y: auto;
+        font: 12px/1.7 ui-monospace, 'Cascadia Code', monospace;
+        margin: 0;
+        border: 1px solid #27272a;
+      }
+      .log-ok {
+        color: #4ade80;
+      }
+      .log-error {
+        color: #f87171;
+      }
+      .log-info {
+        color: #93c5fd;
+      }
+      .log-placeholder {
+        color: #52525b;
+      }
+
+      /* ── Status indicators ───────────────────────────── */
+      .status-ok {
+        color: #16a34a;
+        font-weight: 600;
+      }
+      .status-error {
+        color: #dc2626;
+        font-weight: 600;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 1px 6px;
+        border-radius: 99px;
+        background: #ede9fe;
+        color: #6d28d9;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Sample application ─────────────────────────────────────────── -->
+
+    <nav class="app-nav">
+      <span class="logo">My Sample App</span>
+      <!-- US-02: activator placed inside <nav> -->
+      <button type="button" class="activator" data-activator data-placement="nav">Feedback</button>
+    </nav>
+
+    <div class="app-layout">
+      <main class="app-main">
+        <h1 style="font-size: 15px; margin: 0 0 14px">
+          Dashboard <span class="badge">targetable content for Batch 3</span>
+        </h1>
+
+        <div class="card" data-testid="card-metrics">
+          <h3>Weekly Metrics</h3>
+          <p>Engagement up 12% — users are spending more time on the dashboard.</p>
+        </div>
+
+        <div class="card" data-testid="card-actions">
+          <h3>Quick Actions</h3>
+          <p>Buttons and interactive controls a tester may want to target in Batch 3.</p>
+        </div>
+
+        <div class="card" data-testid="card-form">
+          <h3>Sample Form</h3>
+          <label style="display: block; margin-bottom: 8px; font-size: 13px">
+            Name
+            <input
+              type="text"
+              placeholder="Enter your name"
+              style="
+                display: block;
+                width: 100%;
+                padding: 6px 8px;
+                margin-top: 4px;
+                border: 1px solid #d4d4d8;
+                border-radius: 4px;
+                font-size: 13px;
+              "
+            />
+          </label>
+          <label style="display: block; font-size: 13px">
+            Comment
+            <textarea
+              rows="2"
+              placeholder="Leave a comment"
+              style="
+                display: block;
+                width: 100%;
+                padding: 6px 8px;
+                margin-top: 4px;
+                border: 1px solid #d4d4d8;
+                border-radius: 4px;
+                font-size: 13px;
+                resize: vertical;
+              "
+            ></textarea>
+          </label>
+        </div>
+      </main>
+
+      <aside class="app-sidebar">
+        <h2 style="font-size: 14px; margin: 0 0 12px">Sidebar</h2>
+        <!-- US-02: activator placed inside <aside> -->
+        <button
+          type="button"
+          class="activator"
+          data-activator
+          data-placement="aside"
+          style="width: 100%; margin-bottom: 12px"
+        >
+          Feedback (sidebar)
+        </button>
+        <p style="color: #71717a; font-size: 13px; margin: 0 0 8px">
+          Navigation links or context would live here.
+        </p>
+        <p style="color: #71717a; font-size: 13px; margin: 0">
+          This activator verifies US-02 placement independence — it stays inside
+          <code>&lt;aside&gt;</code> after init.
+        </p>
+      </aside>
+    </div>
+
+    <!-- ── Test controls ─────────────────────────────────────────────── -->
+    <div class="controls">
+      <!-- US-01 -->
+      <details open>
+        <summary>US-01 — Install &amp; import</summary>
+        <p>Status: <span id="import-status">checking…</span></p>
+        <p class="hint">
+          If this page loads and the status above shows ✓, US-01 passes. The package was installed
+          from <code>file:../</code> and resolved through the <code>exports</code> map to
+          <code>dist/flag-feedback.esm.js</code>.
+        </p>
+      </details>
+
+      <!-- US-02 -->
+      <details open>
+        <summary>US-02 — Activator placement</summary>
+        <p>
+          Three activators are bound on load: one in <code>&lt;nav&gt;</code>, one in
+          <code>&lt;aside&gt;</code>, and one injected into a <code>&lt;div&gt;</code> below. Click
+          each — no JS errors should occur and each activator must stay inside its container.
+        </p>
+        <!-- US-02: activator added programmatically inside a <div> -->
+        <div class="btn-row">
+          <div id="div-activator-slot"></div>
+        </div>
+        <p class="hint">
+          DevTools check: inspect any activator element — its
+          <code>parentElement</code> must be its original host container, not
+          <code>&lt;body&gt;</code> or a package-owned node.
+        </p>
+      </details>
+
+      <!-- US-03 -->
+      <details open>
+        <summary>US-03 — No package styles on activator</summary>
+        <p>
+          All activators use host-defined styles (purple background, set in this page's stylesheet).
+          The package must not override or add to them.
+        </p>
+        <p class="hint">
+          DevTools check: select any activator — its <code>style</code> attribute must be absent (or
+          only contain host-set values), and no package-injected class should appear in the
+          <em>Styles</em> panel.
+        </p>
+      </details>
+
+      <!-- US-04 -->
+      <details open>
+        <summary>US-04 — Endpoint validation</summary>
+        <p>
+          Click a scenario to call <code>initFeedback</code> with that endpoint. Valid URLs log ✓;
+          invalid ones trigger <code>console.error</code> visible in the log below.
+        </p>
+        <div class="btn-row">
+          <button type="button" class="test-btn valid" id="ep-https">
+            ✓ https://example.com
+          </button>
+          <button type="button" class="test-btn valid" id="ep-localhost">
+            ✓ http://localhost
+          </button>
+          <button type="button" class="test-btn valid" id="ep-127">
+            ✓ http://127.0.0.1:3000
+          </button>
+          <button type="button" class="test-btn invalid" id="ep-empty">✗ empty string</button>
+          <button type="button" class="test-btn invalid" id="ep-relative">
+            ✗ /api/feedback (relative)
+          </button>
+          <button type="button" class="test-btn invalid" id="ep-http-ext">
+            ✗ http://example.com
+          </button>
+        </div>
+      </details>
+
+      <!-- US-05 -->
+      <details open>
+        <summary>US-05 — App metadata</summary>
+        <p>
+          Each button re-initializes the widget with a different metadata combination. Once Batch 5
+          is built, submitting will POST the payload — the <code>app</code> field in the log will
+          confirm which fields are present.
+        </p>
+        <div class="btn-row">
+          <button type="button" class="test-btn" id="meta-all">
+            All three (appId + gitCommit + gitRepo)
+          </button>
+          <button type="button" class="test-btn" id="meta-none">None (no app metadata)</button>
+          <button type="button" class="test-btn" id="meta-subset">Subset (appId only)</button>
+        </div>
+      </details>
+
+      <!-- Batch 2+ stubs — filled in as each batch ships -->
+      <details>
+        <summary>
+          Batch 2 — Feedback panel &amp; composition
+          <span class="muted">(not yet built)</span>
+        </summary>
+        <p>
+          Once Batch 2 ships: click any activator above to open the panel. Test open/close, mode
+          switching (design-request / feature-request / bug-fix), and text composition.
+        </p>
+      </details>
+
+      <details>
+        <summary>
+          Batch 3 — Element targeting <span class="muted">(not yet built)</span>
+        </summary>
+        <p>
+          Once Batch 3 ships: enter targeting mode from the open panel, then click any card or form
+          element in the dashboard above. Confirm the element path is captured and shown in the
+          panel.
+        </p>
+      </details>
+
+      <details>
+        <summary>
+          Batch 4 — Interaction recording <span class="muted">(not yet built)</span>
+        </summary>
+        <p>
+          Once Batch 4 ships: start recording, interact with the form and cards, then stop. Confirm
+          the interactions array in the POST payload (log below) contains the recorded events.
+        </p>
+      </details>
+
+      <details>
+        <summary>Batch 5 — Submission <span class="muted">(not yet built)</span></summary>
+        <p>
+          Once Batch 5 ships: fill in feedback and click Submit. The intercepted POST payload
+          appears in the log — confirm <code>id</code>, <code>timestamp</code>, <code>app</code>,
+          <code>device</code>, <code>feedback</code>, <code>elementTargets</code>, and
+          <code>interactions</code> are all present.
+        </p>
+      </details>
+
+      <details>
+        <summary>
+          Batch 6 — Idle &amp; draft persistence <span class="muted">(not yet built)</span>
+        </summary>
+        <p>
+          Once Batch 6 ships: start typing in the panel, refresh the page — confirm the draft is
+          restored. Also leave the panel open without interaction and confirm it closes after the
+          idle timeout.
+        </p>
+      </details>
+    </div>
+
+    <!-- ── Log panel ─────────────────────────────────────────────────── -->
+    <div class="log-panel">
+      <h2>Captured output — console.error + intercepted fetch POST</h2>
+      <pre id="log-output">
+        <span class="log-placeholder">— waiting for test actions —</span></pre
+      >
+    </div>
+
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

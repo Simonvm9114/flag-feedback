@@ -17,6 +17,12 @@ This project is built and supported by the Greenfield MVP Template — an AI-nat
 
 ---
 
-# Phase 5 — Best Practices
+# Phase 6 — MVP Build
 
-This project is in Phase 5 (complete). Implementation heuristics and structural design principles are established. Phase 6 (MVP Build & Refinement) is next: read `requirements/mvp/implementation-heuristics.md` and `docs/architecture/decisions/design-principles.md` before building.
+This project is in Phase 6. The full documentation package is in place — requirements, architecture, best practices, a working skeleton, and a UI kit. The goal of this phase is to build and refine the MVP in staged batches — each one implemented, verified, and approved before the next begins.
+
+---
+
+## Active Command
+
+`/project:build-batch-1` is currently running.

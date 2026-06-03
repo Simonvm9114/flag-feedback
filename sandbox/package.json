@@ -1,0 +1,16 @@
+{
+  "name": "flag-feedback-sandbox",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "setup": "npm --prefix .. run build && npm install"
+  },
+  "dependencies": {
+    "flag-feedback": "file:../"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
+  }
+}

@@ -15,6 +15,20 @@ const baseConfig: InitFeedbackConfig = {
   endpoint: 'https://example.com/api/feedback',
 };
 
+describe('buildPackage comment truncation (US-07)', () => {
+  it('truncates comment text exceeding 10,000 characters', () => {
+    const longComment = 'a'.repeat(10_001);
+    const pkg = buildPackage({ ...emptySession, comment: longComment }, baseConfig);
+    expect(pkg.feedback.text).toHaveLength(10_000);
+  });
+
+  it('does not truncate comment text at or below 10,000 characters', () => {
+    const exactComment = 'b'.repeat(10_000);
+    const pkg = buildPackage({ ...emptySession, comment: exactComment }, baseConfig);
+    expect(pkg.feedback.text).toHaveLength(10_000);
+  });
+});
+
 describe('buildPackage app metadata (US-05)', () => {
   it('includes all three app fields when all are supplied', () => {
     const pkg = buildPackage(emptySession, {

@@ -126,7 +126,33 @@ document.getElementById('meta-subset')?.addEventListener('click', () => {
   log('Initialized with only appId="sandbox-app"', 'ok');
 });
 
-// ── Batch 2+ ───────────────────────────────────────────────────────────────
-// The activators bound above will open the feedback panel once Batch 2 ships.
-// The fetch interceptor at the top will capture every POST payload for Batch 5 testing.
-// No further wiring is needed here until each batch is implemented.
+// ── Batch 2: Feedback panel & composition ─────────────────────────────────
+// US-07 truncation helper — opens the first panel if closed, then fills the textarea.
+document.getElementById('fill-long-comment')?.addEventListener('click', () => {
+  const portals = document.querySelectorAll<HTMLElement>('[data-flag-feedback-portal]');
+  if (!portals.length) {
+    log('No widget initialized — reload the page', 'error');
+    return;
+  }
+
+  // Use the first portal; open its panel if not already visible
+  const portal = portals[0];
+  const overlay = portal.shadowRoot?.querySelector('.ff-panel-overlay');
+  if (!overlay?.classList.contains('ff-panel-overlay--visible')) {
+    // Click the nav activator to open its panel (first activator bound)
+    const activator = document.querySelector<HTMLElement>('button.activator[data-placement="nav"]');
+    activator?.click();
+  }
+
+  // Fill after a microtask so show() has run and reset is done
+  setTimeout(() => {
+    const textarea = portal.shadowRoot?.querySelector<HTMLTextAreaElement>('textarea');
+    if (textarea) {
+      textarea.value = 'x'.repeat(10_001);
+      log(
+        'Filled textarea with 10,001 "x" characters — select a category and click Submit to verify truncation',
+        'info',
+      );
+    }
+  }, 0);
+});

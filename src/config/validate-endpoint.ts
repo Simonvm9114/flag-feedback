@@ -1,7 +1,5 @@
 /** Result of endpoint URL validation at init time. */
-export type EndpointValidationResult =
-  | { valid: true }
-  | { valid: false; message: string };
+export type EndpointValidationResult = { valid: true } | { valid: false; message: string };
 
 /** Returns whether a hostname is allowed for plain HTTP endpoint URLs. */
 function isLocalHttpHost(hostname: string): boolean {
@@ -32,8 +30,7 @@ export function validateEndpoint(endpoint: string): EndpointValidationResult {
   if (parsed.protocol === 'http:') {
     return {
       valid: false,
-      message:
-        'endpoint must use HTTPS (http:// is only allowed for localhost and 127.x.x.x)',
+      message: 'endpoint must use HTTPS (http:// is only allowed for localhost and 127.x.x.x)',
     };
   }
 

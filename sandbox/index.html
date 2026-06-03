@@ -12,7 +12,9 @@
       }
       body {
         margin: 0;
-        font: 14px/1.5 system-ui, sans-serif;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
         background: #f5f5f5;
         color: #1a1a1a;
       }
@@ -159,7 +161,10 @@
         min-height: 120px;
         max-height: 320px;
         overflow-y: auto;
-        font: 12px/1.7 ui-monospace, 'Cascadia Code', monospace;
+        font:
+          12px/1.7 ui-monospace,
+          'Cascadia Code',
+          monospace;
         margin: 0;
         border: 1px solid #27272a;
       }
@@ -303,6 +308,13 @@
           <code>&lt;aside&gt;</code>, and one injected into a <code>&lt;div&gt;</code> below. Click
           each — no JS errors should occur and each activator must stay inside its container.
         </p>
+        <p class="hint">
+          These are three independent <code>initFeedback</code> instances — a test fixture for US-02
+          only, not a real integration pattern. In a real host application a single
+          <code>initFeedback</code> call is made once in the app shell (e.g. the layout component),
+          and the same activator and panel are available on every page. Draft persistence across
+          navigation is covered by US-19 (Batch 6).
+        </p>
         <!-- US-02: activator added programmatically inside a <div> -->
         <div class="btn-row">
           <div id="div-activator-slot"></div>
@@ -336,15 +348,9 @@
           invalid ones trigger <code>console.error</code> visible in the log below.
         </p>
         <div class="btn-row">
-          <button type="button" class="test-btn valid" id="ep-https">
-            ✓ https://example.com
-          </button>
-          <button type="button" class="test-btn valid" id="ep-localhost">
-            ✓ http://localhost
-          </button>
-          <button type="button" class="test-btn valid" id="ep-127">
-            ✓ http://127.0.0.1:3000
-          </button>
+          <button type="button" class="test-btn valid" id="ep-https">✓ https://example.com</button>
+          <button type="button" class="test-btn valid" id="ep-localhost">✓ http://localhost</button>
+          <button type="button" class="test-btn valid" id="ep-127">✓ http://127.0.0.1:3000</button>
           <button type="button" class="test-btn invalid" id="ep-empty">✗ empty string</button>
           <button type="button" class="test-btn invalid" id="ep-relative">
             ✗ /api/feedback (relative)
@@ -373,21 +379,49 @@
       </details>
 
       <!-- Batch 2+ stubs — filled in as each batch ships -->
-      <details>
-        <summary>
-          Batch 2 — Feedback panel &amp; composition
-          <span class="muted">(not yet built)</span>
-        </summary>
+      <details open>
+        <summary>Batch 2 — Feedback panel &amp; composition</summary>
         <p>
-          Once Batch 2 ships: click any activator above to open the panel. Test open/close, mode
-          switching (design-request / feature-request / bug-fix), and text composition.
+          <strong>US-06 Open panel:</strong> Click any activator (nav, sidebar, or div) — the
+          feedback panel must open bottom-right. Confirm it contains a comment textarea, category
+          selector (3 options), "Target element" button, "Start recording" button, and a Submit
+          button. Click the × button — the panel must close. Host links and inputs must remain
+          interactive behind the panel.
+        </p>
+        <p>
+          <strong>US-07 Comment:</strong> Type text in the textarea and click Submit (select a
+          category first). The intercepted POST in the log below must contain
+          <code>feedback.text</code> matching what you typed.
+        </p>
+        <p>
+          <strong>US-07 Truncation:</strong> Click the button below to fill the comment with 10,001
+          characters, then submit — <code>feedback.text</code> in the log must be exactly 10,000
+          characters.
+        </p>
+        <div class="btn-row">
+          <button type="button" class="test-btn" id="fill-long-comment">
+            Fill textarea with 10,001 chars
+          </button>
+        </div>
+        <p>
+          <strong>US-08 Category:</strong> Open the panel and click Submit without selecting a
+          category — an inline error must appear. Select a category and submit — the POST log must
+          contain <code>feedback.category</code> with the correct value
+          (<code>design-request</code>, <code>feature-request</code>, or <code>bug-fix</code>).
+        </p>
+        <p>
+          <strong>US-20 Draft preservation:</strong> Open the panel, type a comment, select a
+          category, then close with ×. Re-open — the comment and category must still be there. Then
+          submit — re-open again and the panel must be blank.
+        </p>
+        <p class="hint">
+          The fetch interceptor at the top of main.ts captures every POST and prints the JSON
+          payload in the log panel below.
         </p>
       </details>
 
       <details>
-        <summary>
-          Batch 3 — Element targeting <span class="muted">(not yet built)</span>
-        </summary>
+        <summary>Batch 3 — Element targeting <span class="muted">(not yet built)</span></summary>
         <p>
           Once Batch 3 ships: enter targeting mode from the open panel, then click any card or form
           element in the dashboard above. Confirm the element path is captured and shown in the
@@ -431,8 +465,7 @@
     <div class="log-panel">
       <h2>Captured output — console.error + intercepted fetch POST</h2>
       <pre id="log-output">
-        <span class="log-placeholder">— waiting for test actions —</span></pre
-      >
+        <span class="log-placeholder">— waiting for test actions —</span></pre>
     </div>
 
     <script type="module" src="/main.ts"></script>

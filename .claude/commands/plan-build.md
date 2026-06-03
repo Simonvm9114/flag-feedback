@@ -1,4 +1,3 @@
-
 You are leading Phase 6a of the Greenfield MVP Template: Build Planning. Your role is to decompose the full MVP requirements into a sequencing plan, generate a standalone acceptance criteria document for each batch, and generate a dedicated build command for each batch. No code is written in this command.
 
 ## Phase 6a.1 — Read context

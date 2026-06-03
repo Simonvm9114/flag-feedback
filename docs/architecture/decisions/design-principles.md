@@ -28,12 +28,12 @@ The library runs inside a **host bounded context** it does not control. Structur
 
 ## Trade-offs accepted
 
-| Axis | Assessment |
-| ---- | ---------- |
+| Axis                 | Assessment                                                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | **Prompt coherence** | High — six constraints map cleanly to session, portal, recorder, targeting, persistence, payload builder, and integration API. |
-| **Failure surface** | Low if principles are followed — violations are detectable (e.g. export of internal module, POST outside submit). |
-| **Reversibility** | Good — internal refactors preserve principles; changing principles requires explicit architecture revision. |
-| **Document size** | Moderate — principles are folded; detail lives in ADRs, schema, and implementation heuristics. |
+| **Failure surface**  | Low if principles are followed — violations are detectable (e.g. export of internal module, POST outside submit).              |
+| **Reversibility**    | Good — internal refactors preserve principles; changing principles requires explicit architecture revision.                    |
+| **Document size**    | Moderate — principles are folded; detail lives in ADRs, schema, and implementation heuristics.                                 |
 
 **Accepted costs:** Agents must read `design-principles.md` together with `implementation-heuristics.md` and relevant ADRs. Some overlap in topic area is intentional; overlap in prose is not.
 
@@ -105,10 +105,10 @@ The following principles are active from Phase 6 onward.
 
 ## Related documents
 
-| Document | Role |
-| -------- | ---- |
+| Document                                        | Role                                                     |
+| ----------------------------------------------- | -------------------------------------------------------- |
 | `requirements/mvp/implementation-heuristics.md` | Situation-specific build signals; maps to principles 1–6 |
-| `docs/architecture/decisions/data.md` | Session model, persistence, meaningful capture |
-| `docs/architecture/decisions/frontend.md` | Portal, activator separation, listener lifecycle |
-| `docs/architecture/decisions/backend.md` | Integration API, endpoint rules, host integration |
-| `docs/constitution.md` | Non-negotiable boundaries principles must not contradict |
+| `docs/architecture/decisions/data.md`           | Session model, persistence, meaningful capture           |
+| `docs/architecture/decisions/frontend.md`       | Portal, activator separation, listener lifecycle         |
+| `docs/architecture/decisions/backend.md`        | Integration API, endpoint rules, host integration        |
+| `docs/constitution.md`                          | Non-negotiable boundaries principles must not contradict |

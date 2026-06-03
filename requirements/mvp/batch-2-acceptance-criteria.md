@@ -28,8 +28,18 @@ Feedback panel and composition (US-06, US-07, US-08). Criteria are evaluated aga
 ## [US-08] Select a feedback category
 
 - [ ] The category selector presents exactly three options: "Design request", "Feature request", and "Bug fix".
-- [ ] No category is pre-selected when the feedback panel opens.
+- [ ] No category is pre-selected when the feedback panel opens for the first time in a session (i.e. no prior draft exists).
 - [ ] Attempting to submit without selecting a category is blocked; an inline error message is displayed.
 - [ ] The selected category value is included in the submitted feedback package under `feedback.category`.
 
 **Relevant constraints:** `docs/architecture/decisions/data.md` (state machine, required category), `.hatch/deliverables/assets/feedback-package-schema-v2.md`, `docs/architecture/decisions/design-principles.md` (principle 2), UI kit components (`src/components/`, `src/ui/` — all package-owned UI must use kit components)
+
+---
+
+## [US-20] Keep draft when panel is dismissed
+
+- [ ] Closing the feedback panel without submitting does not clear the comment text or category selection.
+- [ ] Re-opening the panel restores the previously entered comment and the previously selected category (if any).
+- [ ] Comment and category are cleared only after a successful submission — not on close, not on `destroy()`.
+
+**Relevant constraints:** `docs/architecture/decisions/data.md` (session cleared on successful submission only), `docs/architecture/decisions/design-principles.md` (principles 2, 5)

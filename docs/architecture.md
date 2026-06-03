@@ -28,15 +28,15 @@ flag-feedback package (browser)
 
 ## Components
 
-| Component                   | Role                                                                                                       |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Integration API**         | `initFeedback` validates config, binds activator, creates portal; `destroy()` tears down listeners and DOM |
-| **Session / state machine** | Owns feedback session fields and mode transitions                                                          |
+| Component                   | Role                                                                                                                  |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Integration API**         | `initFeedback` validates config, binds activator, creates portal; `destroy()` tears down listeners and DOM            |
+| **Session / state machine** | Owns feedback session fields and mode transitions                                                                     |
 | **Persistence**             | Debounced `sessionStorage` draft save/restore; clear on successful submit (see `docs/architecture/decisions/data.md`) |
-| **Portal UI**               | Renders panel and indicators in an open Shadow Root; does not style the activator                          |
-| **Targeting**               | Element-targeting mode, highlights, CSS selector paths (see `docs/functional/glossary.md`, CSS selector path) |
-| **Recorder**                | Recording mode, meaningful event capture, folding, exclusions (see `docs/architecture/decisions/data.md`)   |
-| **Payload builder**         | Assembles schema-compliant JSON at submit time                                                             |
+| **Portal UI**               | Renders panel and indicators in an open Shadow Root; does not style the activator                                     |
+| **Targeting**               | Element-targeting mode, highlights, CSS selector paths (see `docs/functional/glossary.md`, CSS selector path)         |
+| **Recorder**                | Recording mode, meaningful event capture, folding, exclusions (see `docs/architecture/decisions/data.md`)             |
+| **Payload builder**         | Assembles schema-compliant JSON at submit time                                                                        |
 
 ---
 
@@ -70,14 +70,14 @@ No runtime integrations (analytics, email, storage, auth providers) in the libra
 
 ## Build, quality, and release
 
-| Layer       | Stack                                           |
-| ----------- | ----------------------------------------------- |
-| **Source**  | TypeScript                                      |
-| **Build**   | Vite library mode                               |
-| **Checks**  | See `docs/architecture/decisions/formal-checks.md`                            |
-| **Tests**   | See `docs/architecture/decisions/testing.md`                                  |
-| **CI**      | See `docs/architecture/decisions/hosting.md`                                  |
-| **Release** | See `docs/architecture/decisions/hosting.md`, `version-control.md`            |
+| Layer       | Stack                                                              |
+| ----------- | ------------------------------------------------------------------ |
+| **Source**  | TypeScript                                                         |
+| **Build**   | Vite library mode                                                  |
+| **Checks**  | See `docs/architecture/decisions/formal-checks.md`                 |
+| **Tests**   | See `docs/architecture/decisions/testing.md`                       |
+| **CI**      | See `docs/architecture/decisions/hosting.md`                       |
+| **Release** | See `docs/architecture/decisions/hosting.md`, `version-control.md` |
 
 Details: `docs/architecture/decisions/` and `requirements/mvp/architecture.md`.
 
@@ -88,7 +88,7 @@ Details: `docs/architecture/decisions/` and `requirements/mvp/architecture.md`.
 | Document                                                   | Purpose                                |
 | ---------------------------------------------------------- | -------------------------------------- |
 | `docs/architecture/decisions/`                             | Per-dimension decisions and trade-offs |
-| `docs/architecture/decisions/design-principles.md`        | Structural constraints (Phase 6+)      |
+| `docs/architecture/decisions/design-principles.md`         | Structural constraints (Phase 6+)      |
 | `docs/architecture/vision.md`                              | Target architecture beyond MVP         |
 | `requirements/mvp/architecture.md`                         | MVP implementation specification       |
 | `.hatch/deliverables/assets/feedback-package-schema-v2.md` | Payload contract                       |

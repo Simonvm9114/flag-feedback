@@ -26,6 +26,7 @@ The `requirements/` folder is a **permanent, lifecycle-persistent workspace** �
 User stories describe what each type of user needs to be able to do, written from the user's perspective rather than the system's.
 
 **Format:**
+
 ```markdown
 # [Feature Set / MVP] — User Stories
 
@@ -46,6 +47,7 @@ If a questionnaire section is too vague to derive specific user stories, write w
 Acceptance criteria define when a story or feature is complete. An agent uses this document at the **end** of implementation to verify completeness — not at the beginning. Keeping them separate from user stories reflects this: the agent reads user-stories.md to understand what to build, then reads acceptance-criteria.md to confirm it's done.
 
 **Format:**
+
 ```markdown
 # [Feature Set / MVP] — Acceptance Criteria
 
@@ -66,13 +68,14 @@ If a story has no clear acceptance criterion yet, mark it `<!-- TODO: acceptance
 A definitive list of what is explicitly excluded from this feature set. This document is a **guardrail**: before implementing anything, a coding agent checks whether it appears here. If it does, the agent stops and asks for confirmation before proceeding. Without this list, an agent expanding scope feels like helpfulness — it has no way to know it's doing something unwanted.
 
 **Format:**
+
 ```markdown
 # [Feature Set / MVP] — Out of Scope
 
 The following items are explicitly excluded from this feature set:
 
-| Item | Reason / Deferral Note |
-|------|------------------------|
+| Item                    | Reason / Deferral Note                                                       |
+| ----------------------- | ---------------------------------------------------------------------------- |
 | [Feature or capability] | [Brief reason: deferred to phase 2, out of budget, not needed for MVP, etc.] |
 ```
 
@@ -94,6 +97,7 @@ Include everything that was explicitly deferred, not just what was rejected. A f
 Before writing, verify: every user story has a corresponding acceptance criterion entry; no acceptance criterion is subjective or requires interpretation to evaluate; the out-of-scope list captures everything mentioned as deferred, not only what was explicitly rejected.
 
 Write three files to the target folder:
+
 1. `user-stories.md`
 2. `acceptance-criteria.md`
 3. `out-of-scope.md`

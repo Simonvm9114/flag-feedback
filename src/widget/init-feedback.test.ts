@@ -42,9 +42,7 @@ describe('initFeedback (US-02, US-03, US-04)', () => {
       container.appendChild(activator);
       document.body.appendChild(container);
 
-      expect(() =>
-        initFeedback({ activator, endpoint: VALID_ENDPOINT }).destroy(),
-      ).not.toThrow();
+      expect(() => initFeedback({ activator, endpoint: VALID_ENDPOINT }).destroy()).not.toThrow();
     }
   });
 
@@ -140,9 +138,7 @@ describe('initFeedback (US-02, US-03, US-04)', () => {
     const activator = document.createElement('button');
     document.body.appendChild(activator);
 
-    expect(() =>
-      initFeedback({ activator, endpoint: VALID_ENDPOINT }).destroy(),
-    ).not.toThrow();
+    expect(() => initFeedback({ activator, endpoint: VALID_ENDPOINT }).destroy()).not.toThrow();
   });
 
   it('initializes without error when only a subset of app metadata is supplied (US-05)', () => {

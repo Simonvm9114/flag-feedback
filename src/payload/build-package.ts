@@ -65,7 +65,7 @@ export function buildPackage(
       pixelRatio: window.devicePixelRatio,
     },
     feedback: {
-      text: session.comment,
+      text: session.comment.slice(0, 10_000),
       category: session.category ?? '',
     },
     elementTargets: session.elementTargets,

@@ -86,3 +86,6 @@ As a widget user, I want the feedback panel to hide automatically when I start r
 
 **[US-18] Application interaction is unaffected outside active modes**
 As a widget user, I want normal application clicks and interactions to work without any interception by the widget when neither element-targeting mode nor recording mode is active so that the widget does not disrupt my normal use of the application.
+
+**[US-20] Keep draft when panel is dismissed**
+As a widget user, I want my in-progress comment and category selection to be preserved if I close the feedback panel without submitting, so that I can dismiss the panel temporarily and return to it without losing what I have written.

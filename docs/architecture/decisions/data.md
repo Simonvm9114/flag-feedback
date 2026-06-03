@@ -14,7 +14,7 @@ Element-targeting mode and recording mode are independent sub-states (see `docs/
 
 | Field           | Description                                                                                                               |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Comment text    | Free-form feedback text; truncation limits per `.hatch/deliverables/assets/feedback-package-schema-v2.md`                    |
+| Comment text    | Free-form feedback text; truncation limits per `.hatch/deliverables/assets/feedback-package-schema-v2.md`                 |
 | Category        | One of `design-request`, `feature-request`, or `bug-fix` (see `.hatch/deliverables/assets/feedback-package-schema-v2.md`) |
 | Element targets | Array of `{ path, comment }` entries from element-targeting mode                                                          |
 | Interaction log | Append-only array of interaction events from recording mode                                                               |
@@ -62,13 +62,13 @@ The interaction log is a reconstruction aid for agents processing feedback — n
 
 **Module boundaries**
 
-| Module                  | Responsibility                                                                 |
-| ----------------------- | ------------------------------------------------------------------------------ |
-| Session / state machine | Mode transitions and session field ownership                                   |
+| Module                  | Responsibility                                                                     |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| Session / state machine | Mode transitions and session field ownership                                       |
 | Persistence             | Serialize/deserialize draft to `sessionStorage`; debounced writes; clear on submit |
-| Recorder                | Passive listener registration, meaningful event capture, folding, exclusions   |
-| Targeting               | Element selection, highlight overlay, selector paths (up to 5 ancestor levels) |
-| Payload builder         | Schema-compliant JSON assembly and field truncation                            |
+| Recorder                | Passive listener registration, meaningful event capture, folding, exclusions       |
+| Targeting               | Element selection, highlight overlay, selector paths (up to 5 ancestor levels)     |
+| Payload builder         | Schema-compliant JSON assembly and field truncation                                |
 
 ## Context
 
@@ -88,12 +88,12 @@ Complex mode interactions (panel hide/show, simultaneous mode indicators, submit
 
 ## Trade-offs accepted
 
-| Axis                       | Assessment                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Prompt coherence**       | High — session fields map to payload schema; persistence module documents restore behaviour.     |
-| **Failure surface**        | Moderate — restore edge cases (corrupt JSON, mode/listener mismatch); quota and private mode.    |
-| **Reversibility**          | Good — persistence format can evolve behind the persistence module without schema breaks.        |
-| **Operational simplicity** | Moderate — debounced writes, restore tests, and clear-on-submit rules required in Phase 6.       |
+| Axis                       | Assessment                                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| **Prompt coherence**       | High — session fields map to payload schema; persistence module documents restore behaviour.  |
+| **Failure surface**        | Moderate — restore edge cases (corrupt JSON, mode/listener mismatch); quota and private mode. |
+| **Reversibility**          | Good — persistence format can evolve behind the persistence module without schema breaks.     |
+| **Operational simplicity** | Moderate — debounced writes, restore tests, and clear-on-submit rules required in Phase 6.    |
 
 **Accepted costs:** Implementation and tests for serialize/restore and recording listener re-attachment. Drafts are lost when the user closes the tab. Host developers with multiple widgets on one page should supply distinct `sessionKey` values.
 

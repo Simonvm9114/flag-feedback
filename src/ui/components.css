@@ -156,6 +156,115 @@
   overflow-wrap: break-word;
 }
 
+/* ── Textarea ─────────────────────────────────────────────────────────────── */
+
+.ff-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* ── Category radio group ─────────────────────────────────────────────────── */
+
+.ff-category-group {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ff-space-2);
+}
+
+.ff-category-group legend {
+  float: left;
+  width: 100%;
+  margin-bottom: var(--ff-space-2);
+  font-size: var(--ff-font-size-sm);
+  font-weight: var(--ff-font-weight-medium);
+  color: var(--ff-color-text);
+  padding: 0;
+}
+
+.ff-category-option {
+  display: flex;
+  align-items: center;
+  gap: var(--ff-space-2);
+  cursor: pointer;
+  font-size: var(--ff-font-size-base);
+  color: var(--ff-color-text);
+  line-height: var(--ff-line-height-normal);
+}
+
+.ff-category-radio {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--ff-color-primary);
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* ── Feedback panel overlay ───────────────────────────────────────────────── */
+
+.ff-panel-overlay {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: var(--ff-panel-width);
+  max-width: calc(100vw - 40px);
+  z-index: var(--ff-z-overlay);
+  display: none;
+}
+
+.ff-panel-overlay--visible {
+  display: block;
+}
+
+.ff-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--ff-space-3);
+  border-bottom: 1px solid var(--ff-color-border-subtle);
+}
+
+.ff-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ff-color-text-secondary);
+  font-size: 20px;
+  line-height: 1;
+  border-radius: var(--ff-radius-sm);
+  padding: 0;
+  font-family: inherit;
+}
+
+.ff-panel-close:hover {
+  background: var(--ff-color-background-muted);
+  color: var(--ff-color-text);
+}
+
+.ff-panel-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ff-space-2);
+}
+
+.ff-btn--sm {
+  min-height: 36px;
+  padding: var(--ff-space-1) var(--ff-space-3);
+  font-size: var(--ff-font-size-sm);
+}
+
+/* ── Mode indicator pill ──────────────────────────────────────────────────── */
+
 .ff-pill-preview {
   display: inline-flex;
   align-items: center;

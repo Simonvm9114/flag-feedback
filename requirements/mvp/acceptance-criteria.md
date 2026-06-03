@@ -211,6 +211,16 @@ Each section corresponds to a user story in `requirements/mvp/user-stories.md`. 
 
 ---
 
+## [US-20] Keep draft when panel is dismissed
+
+- [ ] Closing the feedback panel without submitting does not clear the comment text or category selection.
+- [ ] Re-opening the panel restores the previously entered comment and the previously selected category (if any).
+- [ ] Comment and category are cleared only after a successful submission — not on close, not on `destroy()`.
+
+**Relevant constraints:** `docs/architecture/decisions/data.md` (session cleared on successful submission only — "not on `destroy()` or failed submit"), `docs/architecture/decisions/design-principles.md` (principle 2 — session is single source of truth; principle 5 — clear on successful submit only)
+
+---
+
 ## [US-17] Panel hides during recording
 
 - [ ] Starting a recording session causes the feedback panel to become not visible.

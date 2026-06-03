@@ -49,12 +49,12 @@ Endpoint validation rules (HTTPS required except localhost, relative URLs reject
 
 The package only performs a browser **`fetch` POST** to the configured `endpoint`. It cannot connect to a database, hold write credentials, or bypass the same-origin policy. Host developers who want **one shared database** across dev, test, and production should use **server-side ingestion**, not a client-exposed secret.
 
-| Goal | Recommended pattern |
-| ---- | ------------------- |
+| Goal                                       | Recommended pattern                                                                                                                                                                                                                               |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feedback stored in the host app's database | Each environment configures its own absolute `endpoint` (e.g. `https://app-dev.example.com/api/feedback`). The host backend validates the request and writes to storage — optionally forwarding to a **shared** database or pipeline server-side. |
-| Same logical store for all environments | Use separate endpoints per environment (required by URL validation) that all forward to one store with server-held credentials. The widget never embeds API keys. |
-| Cross-origin POST to a dedicated receiver | The receiver must respond with appropriate **CORS** headers for the host origin. A thin serverless function or API gateway is still a backend; it is not a package feature. |
-| Secrets and auth | Belong on the server receiving the POST. Do not pass database tokens, Supabase service keys, or similar through `initFeedback` — they would be visible to every end user (see `docs/constitution.md`, Hard Boundaries; Principle 6). |
+| Same logical store for all environments    | Use separate endpoints per environment (required by URL validation) that all forward to one store with server-held credentials. The widget never embeds API keys.                                                                                 |
+| Cross-origin POST to a dedicated receiver  | The receiver must respond with appropriate **CORS** headers for the host origin. A thin serverless function or API gateway is still a backend; it is not a package feature.                                                                       |
+| Secrets and auth                           | Belong on the server receiving the POST. Do not pass database tokens, Supabase service keys, or similar through `initFeedback` — they would be visible to every end user (see `docs/constitution.md`, Hard Boundaries; Principle 6).              |
 
 Relative URLs are rejected (see `requirements/mvp/acceptance-criteria.md`, US-04) so each environment must supply a full URL pointing at an origin that accepts the POST. Routing all environments through the **host application's backend** remains the default, secure integration path.
 

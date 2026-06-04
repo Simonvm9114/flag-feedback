@@ -45,12 +45,12 @@ describe('buildPackage app metadata (US-05)', () => {
     expect(pkg.app.route).toBe(`${window.location.pathname}${window.location.hash}`);
   });
 
-  it('sets app metadata fields to null when none are supplied', () => {
+  it('sets app.id to null and omits git fields when no optional config is supplied', () => {
     const pkg = buildPackage(emptySession, baseConfig);
 
     expect(pkg.app.id).toBeNull();
-    expect(pkg.app.gitCommit).toBeNull();
-    expect(pkg.app.gitRepo).toBeNull();
+    expect(pkg.app).not.toHaveProperty('gitCommit');
+    expect(pkg.app).not.toHaveProperty('gitRepo');
   });
 
   it('includes only supplied app metadata fields for a subset', () => {

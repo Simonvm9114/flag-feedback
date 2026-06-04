@@ -53,7 +53,11 @@ export function createPersistence(sessionKey?: string): PersistenceController {
         if (typeof parsed !== 'object' || parsed === null) return null;
         const draft = parsed as Record<string, unknown>;
         if (!VALID_MODES.has(draft['mode'] as SessionMode)) {
-          try { sessionStorage.removeItem(key); } catch { /* ignore */ }
+          try {
+            sessionStorage.removeItem(key);
+          } catch {
+            /* ignore */
+          }
           return null;
         }
         return parsed as DraftData;

@@ -32,7 +32,7 @@ export function createModeIndicator(options: ModeIndicatorOptions): ModeIndicato
   btn.className = options.buttonClassName;
   btn.textContent = options.buttonLabel;
   btn.setAttribute('aria-label', options.buttonAriaLabel);
-  btn.addEventListener('click', options.onAction);
+  btn.addEventListener('click', () => options.onAction());
 
   el.append(dot, labelEl, btn);
   return { el, labelEl };

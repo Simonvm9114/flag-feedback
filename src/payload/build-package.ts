@@ -21,13 +21,14 @@ export type FeedbackPackage = {
 
 /** Builds the `app` object from init config and current page location. */
 function buildAppMetadata(config: InitFeedbackConfig): Record<string, string | null> {
-  return {
-    id: config.appId || null,
-    gitCommit: config.gitCommit || null,
-    gitRepo: config.gitRepo || null,
+  const meta: Record<string, string | null> = {
+    id: config.appId ?? null,
     url: window.location.href,
     route: `${window.location.pathname}${window.location.hash}`,
   };
+  if (config.gitCommit) meta.gitCommit = config.gitCommit;
+  if (config.gitRepo) meta.gitRepo = config.gitRepo;
+  return meta;
 }
 
 /** Assembles a schema-compliant feedback package from session state and init config. */

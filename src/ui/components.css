@@ -237,28 +237,56 @@
 /* ── Mobile bottom sheet ──────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
+  /* Expand the overlay to cover the entire viewport — including any gap that
+     would otherwise appear between the sheet bottom and the virtual keyboard.
+     Without this, touches in that gap reach the host-app body and scroll it;
+     on iOS PWA, position:fixed elements track the visual viewport, so a
+     scrolling body makes the panel drift upward out of view. */
   .ff-panel-overlay {
+    top: 0;
     left: 0;
     right: 0;
-    /* Lifted above the home indicator and, when the virtual keyboard is open,
-       above the keyboard too (--ff-panel-keyboard-offset is set via JS). */
-    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
+    bottom: 0;
     width: 100%;
     max-width: 100%;
+    max-height: none;
+    overflow: hidden;
+    /* Semi-transparent dim: signals that the panel is active and reinforces
+       that the host content behind it is non-interactive. */
+    background: rgba(0, 0, 0, 0.4);
+    /* touch-action:none on the backdrop prevents iOS elastic-scroll from
+       propagating touches through to the host page; the card re-enables
+       pan-y so it can still scroll its own content. */
+    touch-action: none;
+  }
+
+  /* The base rule sets display:block on --visible; override to flex here so
+     we can push the card to the bottom of the full-screen backdrop. */
+  .ff-panel-overlay--visible {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .ff-panel-overlay .ff-card {
+    width: 100%;
+    border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
+    /* Card is now the scroll container (the overlay no longer scrolls). */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     /* svh = small viewport height (browser chrome fully visible) — prevents
-       the sheet from extending below the visible area on iOS Safari where
+       the card from extending below the visible area on iOS Safari where
        100vh equals the chrome-hidden (large) height.
-       The second expression shrinks the sheet when the virtual keyboard opens
+       The second expression shrinks the card when the virtual keyboard opens
        on iOS (where svh doesn't respond to the keyboard). */
     max-height: min(
       85svh,
       calc(var(--ff-panel-vvp-height, 100svh) - env(safe-area-inset-bottom, 0px))
     );
-    border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
-  }
-
-  .ff-panel-overlay .ff-card {
-    border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
+    /* Lifted above the home indicator and, when the virtual keyboard is open,
+       above the keyboard too (--ff-panel-keyboard-offset is set via JS). */
+    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
   }
 
   .ff-element-prompt {

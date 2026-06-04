@@ -1,6 +1,6 @@
 {
   "name": "flag-feedback",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Framework-agnostic client library for structured, element-level feedback",
   "type": "module",
   "main": "./dist/flag-feedback.umd.js",

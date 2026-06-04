@@ -211,18 +211,20 @@
   bottom: 20px;
   right: 20px;
   width: var(--ff-panel-width);
-  max-width: calc(100dvw - 40px);
-  max-height: min(600px, calc(100dvh - 40px));
+  /* Use % rather than vw — for position:fixed elements 100% equals the
+     viewport width but avoids dvw/vw unit bugs in shadow DOM on some
+     Android browsers. */
+  max-width: calc(100% - 40px);
+  max-height: min(600px, calc(100vh - 40px));
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   z-index: var(--ff-z-overlay);
-  pointer-events: none;
   display: none;
 }
 
 .ff-panel-overlay--visible {
   display: block;
-  pointer-events: auto;
 }
 
 /* ── Mobile bottom sheet ──────────────────────────────────────────────────── */
@@ -342,7 +344,6 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
-  pointer-events: auto;
   display: inline-flex;
   align-items: center;
   gap: var(--ff-space-3);
@@ -394,12 +395,12 @@
   bottom: 20px;
   right: 20px;
   width: var(--ff-panel-width);
-  max-width: calc(100dvw - 40px);
-  max-height: calc(100dvh - 40px);
+  max-width: calc(100% - 40px);
+  max-height: calc(100vh - 40px);
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   z-index: var(--ff-z-overlay);
-  pointer-events: auto;
 }
 
 .ff-element-prompt-btns {
@@ -414,7 +415,6 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
-  pointer-events: auto;
   display: inline-flex;
   align-items: center;
   gap: var(--ff-space-3);

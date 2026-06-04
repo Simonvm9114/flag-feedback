@@ -165,7 +165,7 @@ document.getElementById('meta-subset')?.addEventListener('click', () => {
 document.getElementById('batch3-reset')?.addEventListener('click', () => {
   const activator = document.querySelector<HTMLElement>('button.activator[data-placement="nav"]');
   if (activator) {
-    initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
+    navInstance = initFeedback({ activator, endpoint: 'https://example.com/api/feedback' });
     log('Widget re-initialized on nav activator', 'ok');
   }
 });

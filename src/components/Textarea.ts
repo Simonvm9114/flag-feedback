@@ -1,3 +1,5 @@
+import { generateId } from '../ui/utils';
+
 export type TextareaOptions = {
   label: string;
   placeholder?: string;
@@ -22,7 +24,7 @@ export function createTextarea(options: TextareaOptions): TextareaField {
   textarea.className = 'ff-input ff-textarea';
   textarea.rows = options.rows ?? 4;
   if (options.placeholder) textarea.placeholder = options.placeholder;
-  label.htmlFor = textarea.id = `ff-textarea-${Math.random().toString(36).slice(2, 9)}`;
+  label.htmlFor = textarea.id = `ff-textarea-${generateId()}`;
 
   field.append(label, textarea);
   return { field, textarea };

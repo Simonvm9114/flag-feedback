@@ -1,6 +1,14 @@
 import type { FeedbackCategory, ElementTarget, InteractionEvent } from '../config/types';
 import type { SessionMode } from '../session/session';
 
+const VALID_MODES: ReadonlySet<SessionMode> = new Set([
+  'idle',
+  'panel',
+  'targeting',
+  'recording',
+  'submitting',
+]);
+
 export type DraftData = {
   mode: SessionMode;
   comment: string;
@@ -43,6 +51,11 @@ export function createPersistence(sessionKey?: string): PersistenceController {
         if (!raw) return null;
         const parsed: unknown = JSON.parse(raw);
         if (typeof parsed !== 'object' || parsed === null) return null;
+        const draft = parsed as Record<string, unknown>;
+        if (!VALID_MODES.has(draft['mode'] as SessionMode)) {
+          try { sessionStorage.removeItem(key); } catch { /* ignore */ }
+          return null;
+        }
         return parsed as DraftData;
       } catch {
         return null;

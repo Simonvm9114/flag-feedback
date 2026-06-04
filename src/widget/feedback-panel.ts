@@ -1,5 +1,6 @@
 import { createButton } from '../components/Button';
 import { createCard } from '../components/Card';
+import { generateId } from '../ui/utils';
 import { createHeading } from '../components/Heading';
 import { createTextarea } from '../components/Textarea';
 import { createCategorySelect } from '../components/CategorySelect';
@@ -48,8 +49,7 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   overlay.setAttribute('aria-label', 'Feedback panel');
 
   // ── Card ───────────────────────────────────────────────────────────────────
-  const card = createCard();
-  card.classList.add('ff-card--stack');
+  const card = createCard({ stack: true });
 
   // ── Header ─────────────────────────────────────────────────────────────────
   const header = document.createElement('div');
@@ -78,7 +78,7 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   });
 
   // ── Category selector ──────────────────────────────────────────────────────
-  const groupName = `ff-cat-${Math.random().toString(36).slice(2, 9)}`;
+  const groupName = `ff-cat-${generateId()}`;
   const categorySelect = createCategorySelect(groupName);
 
   categorySelect.fieldset.addEventListener('change', () => {
@@ -90,12 +90,10 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   const controlsRow = document.createElement('div');
   controlsRow.className = 'ff-panel-controls';
 
-  const targetBtn = createButton({ label: 'Target element', variant: 'secondary' });
-  targetBtn.classList.add('ff-btn--sm');
+  const targetBtn = createButton({ label: 'Target element', variant: 'secondary', size: 'sm' });
   targetBtn.setAttribute('aria-label', 'Activate element-targeting mode');
 
-  const recordBtn = createButton({ label: 'Start recording', variant: 'secondary' });
-  recordBtn.classList.add('ff-btn--sm');
+  const recordBtn = createButton({ label: 'Start recording', variant: 'secondary', size: 'sm' });
   recordBtn.setAttribute('aria-label', 'Start a recording session');
 
   controlsRow.append(targetBtn, recordBtn);
@@ -295,6 +293,7 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
         r.checked = r.value === state.category;
       });
       categorySelect.setError(null);
+      errorArea.hidden = true;
 
       // Rebuild targets list from current session snapshot — handles both
       // returning from targeting mode and re-opening a draft with existing targets.

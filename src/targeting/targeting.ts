@@ -1,6 +1,7 @@
 import { buildSelectorPath } from './selector';
 import { createButton } from '../components/Button';
 import { createCard } from '../components/Card';
+import { createModeIndicator } from '../components/ModeIndicator';
 import { createHeading } from '../components/Heading';
 import { createTextarea } from '../components/Textarea';
 import { createText } from '../components/Text';
@@ -68,8 +69,7 @@ export function createTargeting(options: TargetingOptions): TargetingController 
     const wrapper = document.createElement('div');
     wrapper.className = 'ff-element-prompt ff-root';
 
-    const card = createCard();
-    card.classList.add('ff-card--stack');
+    const card = createCard({ stack: true });
 
     const heading = createHeading({ content: 'Comment on element', level: 'md', as: 'h3' });
 
@@ -89,10 +89,8 @@ export function createTargeting(options: TargetingOptions): TargetingController 
     const btnRow = document.createElement('div');
     btnRow.className = 'ff-element-prompt-btns';
 
-    const cancelBtn = createButton({ label: 'Cancel', variant: 'secondary' });
-    cancelBtn.classList.add('ff-btn--sm');
-    const confirmBtn = createButton({ label: 'Add target', variant: 'primary' });
-    confirmBtn.classList.add('ff-btn--sm');
+    const cancelBtn = createButton({ label: 'Cancel', variant: 'secondary', size: 'sm' });
+    const confirmBtn = createButton({ label: 'Add target', variant: 'primary', size: 'sm' });
 
     btnRow.append(cancelBtn, confirmBtn);
     card.append(heading, pathText, commentField.field, btnRow);
@@ -143,39 +141,21 @@ export function createTargeting(options: TargetingOptions): TargetingController 
     showPrompt(target);
   };
 
-  function createIndicator(): HTMLDivElement {
-    const div = document.createElement('div');
-    div.className = 'ff-targeting-indicator ff-root';
-    div.setAttribute('role', 'status');
-
-    const dot = document.createElement('span');
-    dot.className = 'ff-pill-dot';
-    dot.setAttribute('aria-hidden', 'true');
-
-    const text = document.createElement('span');
-    text.textContent = 'Targeting';
-    countTextEl = text;
-
-    const doneBtn = document.createElement('button');
-    doneBtn.type = 'button';
-    doneBtn.className = 'ff-targeting-done';
-    doneBtn.textContent = 'Done';
-    doneBtn.setAttribute('aria-label', 'Exit element-targeting mode');
-
-    doneBtn.addEventListener('click', () => {
-      options.onDone();
-    });
-
-    div.append(dot, text, doneBtn);
-    return div;
-  }
-
   return {
     enter() {
       if (active) return;
       active = true;
       document.addEventListener('click', handleClick, { capture: true });
-      indicatorEl = createIndicator();
+      const { el, labelEl } = createModeIndicator({
+        className: 'ff-targeting-indicator',
+        label: 'Targeting',
+        buttonClassName: 'ff-targeting-done',
+        buttonLabel: 'Done',
+        buttonAriaLabel: 'Exit element-targeting mode',
+        onAction: () => options.onDone(),
+      });
+      countTextEl = labelEl;
+      indicatorEl = el;
       shadowRoot.appendChild(indicatorEl);
       updateCount();
     },

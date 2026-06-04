@@ -280,6 +280,52 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   submitBtn.addEventListener('click', doSubmit);
   retryBtn.addEventListener('click', doSubmit);
 
+  // ── Mobile scroll lock ─────────────────────────────────────────────────────
+  // Prevents the host page from scrolling while the bottom sheet is open.
+  // Only applied on viewports ≤480px (the bottom-sheet breakpoint) to avoid
+  // locking desktop scroll where the panel is a small corner widget.
+  let scrollLocked = false;
+
+  function lockScroll(): void {
+    if (scrollLocked || !window.matchMedia('(max-width: 480px)').matches) return;
+    document.body.style.overflow = 'hidden';
+    scrollLocked = true;
+  }
+
+  function unlockScroll(): void {
+    if (!scrollLocked) return;
+    document.body.style.overflow = '';
+    scrollLocked = false;
+  }
+
+  // ── Visual-viewport tracking ───────────────────────────────────────────────
+  // On iOS Safari the layout viewport (and therefore svh/dvh) does not shrink
+  // when the virtual keyboard opens — only window.visualViewport does.
+  // We sync two CSS variables onto the overlay so the stylesheet can size and
+  // position the panel to stay entirely above the keyboard.
+  let vvpCleanup: (() => void) | null = null;
+
+  function trackViewport(): void {
+    const vvp = window.visualViewport;
+    if (!vvp) return;
+    const sync = () => {
+      // On Android the viewport already resizes, so keyboardOffset stays 0.
+      const keyboardOffset = Math.max(0, window.innerHeight - vvp.height);
+      overlay.style.setProperty('--ff-panel-keyboard-offset', `${keyboardOffset}px`);
+      overlay.style.setProperty('--ff-panel-vvp-height', `${vvp.height}px`);
+    };
+    vvp.addEventListener('resize', sync);
+    sync();
+    vvpCleanup = () => vvp.removeEventListener('resize', sync);
+  }
+
+  function untrackViewport(): void {
+    overlay.style.removeProperty('--ff-panel-keyboard-offset');
+    overlay.style.removeProperty('--ff-panel-vvp-height');
+    vvpCleanup?.();
+    vvpCleanup = null;
+  }
+
   // ── Show / hide ────────────────────────────────────────────────────────────
   return {
     show() {
@@ -300,13 +346,19 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
       renderTargets();
       renderInteractionsSummary();
 
+      lockScroll();
+      trackViewport();
       overlay.classList.add('ff-panel-overlay--visible');
       commentField.textarea.focus();
     },
     hide() {
       overlay.classList.remove('ff-panel-overlay--visible');
+      unlockScroll();
+      untrackViewport();
     },
     destroy() {
+      unlockScroll();
+      untrackViewport();
       styleEl.remove();
       overlay.remove();
     },

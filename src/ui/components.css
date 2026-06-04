@@ -211,16 +211,18 @@
   bottom: 20px;
   right: 20px;
   width: var(--ff-panel-width);
-  max-width: calc(100vw - 40px);
-  max-height: min(600px, calc(100vh - 40px));
+  max-width: calc(100dvw - 40px);
+  max-height: min(600px, calc(100dvh - 40px));
   overflow-y: auto;
   overscroll-behavior: contain;
   z-index: var(--ff-z-overlay);
+  pointer-events: none;
   display: none;
 }
 
 .ff-panel-overlay--visible {
   display: block;
+  pointer-events: auto;
 }
 
 /* ── Mobile bottom sheet ──────────────────────────────────────────────────── */
@@ -229,10 +231,20 @@
   .ff-panel-overlay {
     left: 0;
     right: 0;
-    bottom: 0;
+    /* Lifted above the home indicator and, when the virtual keyboard is open,
+       above the keyboard too (--ff-panel-keyboard-offset is set via JS). */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
     width: 100%;
     max-width: 100%;
-    max-height: 85vh;
+    /* svh = small viewport height (browser chrome fully visible) — prevents
+       the sheet from extending below the visible area on iOS Safari where
+       100vh equals the chrome-hidden (large) height.
+       The second expression shrinks the sheet when the virtual keyboard opens
+       on iOS (where svh doesn't respond to the keyboard). */
+    max-height: min(
+      85svh,
+      calc(var(--ff-panel-vvp-height, 100svh) - env(safe-area-inset-bottom, 0px))
+    );
     border-radius: var(--ff-radius-lg) var(--ff-radius-lg) 0 0;
   }
 
@@ -243,9 +255,13 @@
   .ff-element-prompt {
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
     width: 100%;
     max-width: 100%;
+    max-height: min(
+      85svh,
+      calc(var(--ff-panel-vvp-height, 100svh) - env(safe-area-inset-bottom, 0px))
+    );
   }
 
   .ff-element-prompt .ff-card {
@@ -326,6 +342,7 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
   gap: var(--ff-space-3);
@@ -377,8 +394,12 @@
   bottom: 20px;
   right: 20px;
   width: var(--ff-panel-width);
-  max-width: calc(100vw - 40px);
+  max-width: calc(100dvw - 40px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: var(--ff-z-overlay);
+  pointer-events: auto;
 }
 
 .ff-element-prompt-btns {
@@ -393,6 +414,7 @@
   position: fixed;
   bottom: 20px;
   left: 20px;
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
   gap: var(--ff-space-3);

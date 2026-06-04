@@ -30,6 +30,7 @@ export function createTargeting(options: TargetingOptions): TargetingController 
   let highlightEl: HTMLDivElement | null = null;
   let promptEl: HTMLDivElement | null = null;
   let countTextEl: HTMLSpanElement | null = null;
+  let vvpCleanup: (() => void) | null = null;
 
   function updateCount(): void {
     if (countTextEl) {
@@ -44,8 +45,23 @@ export function createTargeting(options: TargetingOptions): TargetingController 
   }
 
   function clearPrompt(): void {
+    vvpCleanup?.();
+    vvpCleanup = null;
     promptEl?.remove();
     promptEl = null;
+  }
+
+  function trackViewportForPrompt(el: HTMLDivElement): void {
+    const vvp = window.visualViewport;
+    if (!vvp) return;
+    const sync = () => {
+      const keyboardOffset = Math.max(0, window.innerHeight - vvp.height);
+      el.style.setProperty('--ff-panel-keyboard-offset', `${keyboardOffset}px`);
+      el.style.setProperty('--ff-panel-vvp-height', `${vvp.height}px`);
+    };
+    vvp.addEventListener('resize', sync);
+    sync();
+    vvpCleanup = () => vvp.removeEventListener('resize', sync);
   }
 
   function showHighlight(el: Element): void {
@@ -97,6 +113,7 @@ export function createTargeting(options: TargetingOptions): TargetingController 
     wrapper.appendChild(card);
     shadowRoot.appendChild(wrapper);
     promptEl = wrapper;
+    trackViewportForPrompt(wrapper);
 
     commentField.textarea.focus();
 

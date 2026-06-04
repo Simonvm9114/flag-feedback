@@ -22,7 +22,7 @@ flag-feedback-mvp is a client-side JavaScript package that enables structured, e
 
 7. **All feedback for a single issue is submitted in one package.** A submission combines the comment, category, all element targets, and all recorded interactions into a single JSON POST. The package does not submit partial payloads or multiple requests for one user feedback session.
 
-8. **The package must work in all modern browsers on desktop and mobile.** No polyfills for current evergreen browser capabilities are acceptable. If a browser API is not available in a target environment, the package must degrade gracefully rather than throw an unhandled error.
+8. **The package must work in all modern browsers on desktop and mobile, and the feedback panel UI must be fully usable on handheld touchscreen devices.** The panel layout must be responsive: it must render without horizontal scrolling or clipped controls on viewports as narrow as 320 CSS pixels, and all interactive targets must be large enough to operate comfortably with a finger. No polyfills for current evergreen browser capabilities are acceptable. If a browser API is not available in a target environment, the package must degrade gracefully rather than throw an unhandled error.
 
 9. **Infrastructure costs are minimised.** Free tiers are preferred for all tooling and services. Paid services are only acceptable when no reasonable free alternative exists.
 

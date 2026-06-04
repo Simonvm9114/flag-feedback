@@ -55,7 +55,7 @@ The developer who installs the package into a host application and configures it
 ---
 
 **initFeedback**
-The package's primary integration function. The host developer calls `initFeedback({ activator, endpoint, appId?, gitCommit?, gitRepo? })` to bind an activator element, validate configuration, and create the overlay UI portal. It returns a widget instance. On invalid configuration (for example a missing or disallowed endpoint), initialization fails without attaching listeners or creating portal UI (see `docs/architecture/decisions/backend.md`).
+The package's primary integration function. The host developer calls `initFeedback({ activator, endpoint, appId?, gitCommit?, gitRepo?, sessionKey? })` to bind an activator element, validate configuration, and create the overlay UI portal. Optional `sessionKey` distinguishes `sessionStorage` draft keys when more than one widget instance exists on the same page (see `docs/architecture/decisions/data.md`, `requirements/mvp/acceptance-criteria.md`, US-19). It returns a widget instance. On invalid configuration (for example a missing or disallowed endpoint), initialization fails without attaching listeners or creating portal UI (see `docs/architecture/decisions/backend.md`).
 
 ---
 

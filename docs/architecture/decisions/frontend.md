@@ -29,12 +29,12 @@ The package must work in vanilla JS, React, and Vue host applications without fr
 
 ## Trade-offs accepted
 
-| Axis                       | Assessment                                                                                                                        |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| **Prompt coherence**       | High — `initFeedback({ activator, endpoint, … })` plus portal rendering is unambiguous for agents and host developers.            |
-| **Failure surface**        | Moderate — portal lifecycle and document-level listeners for targeting/recording require disciplined `destroy()` cleanup in SPAs. |
-| **Reversibility**          | Good — entry API and rendering strategy can change without altering the feedback payload contract.                                |
-| **Operational simplicity** | High — no runtime dependencies; standard library build; no consumer environment variables.                                        |
+| Axis                       | Assessment                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Prompt coherence**       | High — `initFeedback({ activator, endpoint, … })` plus portal rendering is unambiguous for agents and host developers.               |
+| **Failure surface**        | Moderate — portal lifecycle and document-level listeners for targeting/recording require disciplined `destroy()` cleanup in SPAs.    |
+| **Reversibility**          | Good — entry API and rendering strategy can change without altering the feedback payload contract.                                   |
+| **Operational simplicity** | High — no runtime dependencies (see `docs/constitution.md`, Principle 1); standard library build; no consumer environment variables. |
 
 **Accepted costs:** Host developers must call `initFeedback` in JavaScript (no drop-in HTML tag). The package must implement and document lifecycle teardown. Success feedback after submission may apply a transient state to the activator element (for example an `aria` attribute or removable child node) without imposing default visual styles.
 
@@ -42,5 +42,6 @@ The package must work in vanilla JS, React, and Vue host applications without fr
 
 - Phase 4 skeleton exposes `initFeedback` as the primary integration surface and documents activator setup with host-owned markup.
 - Panel and indicator styling live inside the portal Shadow Root; theme adaptation is handled within that boundary.
-- UI implementation must register and remove document-level listeners when targeting or recording modes activate and deactivate, and must remove the portal container on `destroy()`.
+- UI implementation must register and remove document-level listeners when targeting or recording modes activate and deactivate, and must remove the portal container on `destroy()`. Element-targeting mode remains inactive until the user activates it (see `docs/constitution.md`, Principle 4).
+- The panel layout must be responsive. A single-column layout using relative units is required; the panel must render without horizontal scrolling or clipped controls on viewports as narrow as 320 CSS pixels, and all interactive targets must be at least 44×44 CSS pixels so the widget is fully operable on touchscreen devices (see `docs/constitution.md`, Principle 8; `requirements/mvp/user-stories.md`, US-21).
 - Framework wrappers remain out of scope; React and Vue hosts call `initFeedback` from their standard mount hooks.

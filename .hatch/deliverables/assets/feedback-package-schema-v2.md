@@ -145,7 +145,9 @@ Unchanged from the `flag-feedback` v1.x experiment. Each entry records one inter
 | `count`       | all                           | Consecutive identical events folded into this entry                                                     |
 | `message`     | `error`, `unhandledrejection` | Error message (truncated to 200 chars)                                                                  |
 
-Input field values are never captured. Password fields and elements marked `data-flag-feedback-ignore` are excluded.
+Input field values are never captured. Password fields and elements marked `data-flag-feedback-ignore` are excluded. Events originating from the package portal, mode indicators, or activator are excluded at capture time (see `docs/architecture/decisions/data.md`).
+
+**Agent-oriented log:** The array should reconstruct what the user did in the **host application** — not dump every DOM event. The recorder coalesces high-frequency noise (e.g. per-keystroke `input`, jitter scroll) so agents can trace features and bugs via `path` and event type without wading through duplicate chatter (see `docs/architecture/decisions/data.md`, Meaningful capture).
 
 ---
 

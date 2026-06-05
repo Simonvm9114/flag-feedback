@@ -42,10 +42,11 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   options.shadowRoot.appendChild(styleEl);
 
   // ── Overlay container ──────────────────────────────────────────────────────
-  const overlay = document.createElement('div');
+  // Using <dialog> puts the panel in the CSS top layer, making it immune to
+  // host-app stacking contexts (transform, will-change, etc.) that would otherwise
+  // cause position:fixed overlays to scroll out of view.
+  const overlay = document.createElement('dialog');
   overlay.className = 'ff-panel-overlay ff-root';
-  overlay.setAttribute('role', 'dialog');
-  overlay.setAttribute('aria-modal', 'false');
   overlay.setAttribute('aria-label', 'Feedback panel');
 
   // ── Card ───────────────────────────────────────────────────────────────────
@@ -241,6 +242,19 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   overlay.append(card);
   options.shadowRoot.appendChild(overlay);
 
+  // Intercept the browser's built-in Escape-key close so our session logic runs.
+  overlay.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    options.onClose();
+  });
+
+  // Close when clicking the backdrop area (outside the card) on any viewport.
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      options.onClose();
+    }
+  });
+
   // ── Shared submit logic ────────────────────────────────────────────────────
   function doSubmit(): void {
     const category = categorySelect.getValue();
@@ -348,15 +362,16 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
 
       lockScroll();
       trackViewport();
-      overlay.classList.add('ff-panel-overlay--visible');
+      if (!overlay.open) overlay.showModal();
       commentField.textarea.focus();
     },
     hide() {
-      overlay.classList.remove('ff-panel-overlay--visible');
+      if (overlay.open) overlay.close();
       unlockScroll();
       untrackViewport();
     },
     destroy() {
+      if (overlay.open) overlay.close();
       unlockScroll();
       untrackViewport();
       styleEl.remove();

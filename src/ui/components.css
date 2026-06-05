@@ -266,7 +266,8 @@
 
 @media (max-width: 480px) {
   /* Dim the backdrop; touch-action:none prevents iOS elastic-scroll from
-     propagating through to the host page — the card re-enables pan-y. */
+     propagating through to the host page — the card re-enables pan-y.
+     overflow:hidden clips sub-pixel DPR rounding at the dialog boundary. */
   .ff-panel-overlay[open] {
     flex-direction: column;
     justify-content: flex-end;
@@ -274,6 +275,7 @@
     padding: 0;
     background: rgba(0, 0, 0, 0.4);
     touch-action: none;
+    overflow: hidden;
   }
 
   .ff-panel-overlay .ff-card {
@@ -284,28 +286,21 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     touch-action: pan-y;
-    /* svh = small viewport height (browser chrome fully visible).
-       The second expression shrinks the card when the virtual keyboard opens
-       on iOS (svh does not respond to the keyboard; visualViewport does). */
-    max-height: min(
-      85svh,
-      calc(var(--ff-panel-vvp-height, 100svh) - env(safe-area-inset-bottom, 0px))
-    );
-    /* Lifted above the home indicator and above the keyboard when open
-       (--ff-panel-keyboard-offset is set via JS from visualViewport). */
-    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
+    /* 100% = dialog height = visual viewport height (the <dialog> top layer is
+       VVP-bounded on iOS, so it already excludes the keyboard). */
+    max-height: min(85svh, calc(100% - env(safe-area-inset-bottom, 0px)));
+    /* Only the home-indicator safe area — keyboard exclusion is handled by the
+       dialog's top-layer positioning, not margin-bottom. */
+    margin-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .ff-element-prompt {
     left: 0;
     right: 0;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
+    bottom: env(safe-area-inset-bottom, 0px);
     width: 100%;
     max-width: 100%;
-    max-height: min(
-      85svh,
-      calc(var(--ff-panel-vvp-height, 100svh) - env(safe-area-inset-bottom, 0px))
-    );
+    max-height: 85svh;
   }
 
   .ff-element-prompt .ff-card {

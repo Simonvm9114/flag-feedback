@@ -312,34 +312,6 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
     scrollLocked = false;
   }
 
-  // ── Visual-viewport tracking ───────────────────────────────────────────────
-  // On iOS Safari the layout viewport (and therefore svh/dvh) does not shrink
-  // when the virtual keyboard opens — only window.visualViewport does.
-  // We sync two CSS variables onto the overlay so the stylesheet can size and
-  // position the panel to stay entirely above the keyboard.
-  let vvpCleanup: (() => void) | null = null;
-
-  function trackViewport(): void {
-    const vvp = window.visualViewport;
-    if (!vvp) return;
-    const sync = () => {
-      // On Android the viewport already resizes, so keyboardOffset stays 0.
-      const keyboardOffset = Math.max(0, window.innerHeight - vvp.height);
-      overlay.style.setProperty('--ff-panel-keyboard-offset', `${keyboardOffset}px`);
-      overlay.style.setProperty('--ff-panel-vvp-height', `${vvp.height}px`);
-    };
-    vvp.addEventListener('resize', sync);
-    sync();
-    vvpCleanup = () => vvp.removeEventListener('resize', sync);
-  }
-
-  function untrackViewport(): void {
-    overlay.style.removeProperty('--ff-panel-keyboard-offset');
-    overlay.style.removeProperty('--ff-panel-vvp-height');
-    vvpCleanup?.();
-    vvpCleanup = null;
-  }
-
   // ── Show / hide ────────────────────────────────────────────────────────────
   return {
     show() {
@@ -361,19 +333,15 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
       renderInteractionsSummary();
 
       lockScroll();
-      trackViewport();
       if (!overlay.open) overlay.showModal();
-      commentField.textarea.focus();
     },
     hide() {
       if (overlay.open) overlay.close();
       unlockScroll();
-      untrackViewport();
     },
     destroy() {
       if (overlay.open) overlay.close();
       unlockScroll();
-      untrackViewport();
       styleEl.remove();
       overlay.remove();
     },

@@ -329,12 +329,8 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
       overlay.style.setProperty('--ff-panel-vvp-height', `${vvp.height}px`);
     };
     vvp.addEventListener('resize', sync);
-    vvp.addEventListener('scroll', sync);
     sync();
-    vvpCleanup = () => {
-      vvp.removeEventListener('resize', sync);
-      vvp.removeEventListener('scroll', sync);
-    };
+    vvpCleanup = () => vvp.removeEventListener('resize', sync);
   }
 
   function untrackViewport(): void {

@@ -265,9 +265,12 @@
 /* ── Mobile bottom sheet ──────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-  /* Dim the backdrop; touch-action:none prevents iOS elastic-scroll from
-     propagating through to the host page — the card re-enables pan-y. */
+  /* Constrain the dialog to the visual viewport height (excludes the keyboard).
+     --ff-panel-vvp-height is updated by JS via visualViewport.resize/scroll so
+     the dialog never extends into the keyboard area, making overflow impossible. */
   .ff-panel-overlay[open] {
+    bottom: auto;
+    height: var(--ff-panel-vvp-height, 100svh);
     flex-direction: column;
     justify-content: flex-end;
     align-items: stretch;
@@ -284,16 +287,12 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     touch-action: pan-y;
-    /* svh = small viewport height (browser chrome fully visible).
-       The second expression shrinks the card when the virtual keyboard opens
-       on iOS (svh does not respond to the keyboard; visualViewport does). */
-    max-height: min(
-      85svh,
-      calc(var(--ff-panel-vvp-height, 100svh) - env(safe-area-inset-bottom, 0px))
-    );
-    /* Lifted above the home indicator and above the keyboard when open
-       (--ff-panel-keyboard-offset is set via JS from visualViewport). */
-    margin-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--ff-panel-keyboard-offset, 0px));
+    /* 100% = dialog height = visual viewport height; the card must not exceed
+       that minus the home-indicator safe area. 85svh caps it on large screens. */
+    max-height: min(85svh, calc(100% - env(safe-area-inset-bottom, 0px)));
+    /* Lift the card above the home indicator only — keyboard is already
+       excluded by the dialog height. */
+    margin-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .ff-element-prompt {

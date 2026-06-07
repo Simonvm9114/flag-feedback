@@ -299,17 +299,65 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
   // Only applied on viewports ≤480px (the bottom-sheet breakpoint) to avoid
   // locking desktop scroll where the panel is a small corner widget.
   let scrollLocked = false;
+  let savedScrollY = 0;
 
   function lockScroll(): void {
     if (scrollLocked || !window.matchMedia('(max-width: 480px)').matches) return;
-    document.body.style.overflow = 'hidden';
+    // iOS Safari ignores `overflow:hidden` on <body> for touch scrolling, so the
+    // host page scrolls through the open panel. Pinning the body with
+    // position:fixed (and restoring scrollY on unlock) is the only reliable lock.
+    savedScrollY = window.scrollY;
+    const body = document.body.style;
+    body.position = 'fixed';
+    body.top = `-${savedScrollY}px`;
+    body.left = '0';
+    body.right = '0';
+    body.width = '100%';
     scrollLocked = true;
   }
 
   function unlockScroll(): void {
     if (!scrollLocked) return;
-    document.body.style.overflow = '';
+    const body = document.body.style;
+    body.position = '';
+    body.top = '';
+    body.left = '';
+    body.right = '';
+    body.width = '';
+    window.scrollTo(0, savedScrollY);
     scrollLocked = false;
+  }
+
+  // ── Visual-viewport tracking ───────────────────────────────────────────────
+  // iOS keeps fixed / top-layer (<dialog>) elements anchored to the LAYOUT
+  // viewport, which does not shrink when the virtual keyboard opens. Left alone
+  // the dialog extends behind the keyboard and the user can pan it out of view.
+  // We sync the visual-viewport height and offset onto the overlay so the mobile
+  // stylesheet can size and pin the dialog to the visible area — a single source
+  // of truth (the dialog), so no doubled keyboard offset on the card.
+  let vvpCleanup: (() => void) | null = null;
+
+  function trackViewport(): void {
+    const vvp = window.visualViewport;
+    if (!vvp) return;
+    const sync = () => {
+      overlay.style.setProperty('--ff-panel-vvp-height', `${vvp.height}px`);
+      overlay.style.setProperty('--ff-panel-vvp-top', `${vvp.offsetTop}px`);
+    };
+    vvp.addEventListener('resize', sync);
+    vvp.addEventListener('scroll', sync);
+    sync();
+    vvpCleanup = () => {
+      vvp.removeEventListener('resize', sync);
+      vvp.removeEventListener('scroll', sync);
+    };
+  }
+
+  function untrackViewport(): void {
+    overlay.style.removeProperty('--ff-panel-vvp-height');
+    overlay.style.removeProperty('--ff-panel-vvp-top');
+    vvpCleanup?.();
+    vvpCleanup = null;
   }
 
   // ── Show / hide ────────────────────────────────────────────────────────────
@@ -333,15 +381,18 @@ export function createFeedbackPanel(options: FeedbackPanelOptions): FeedbackPane
       renderInteractionsSummary();
 
       lockScroll();
+      trackViewport();
       if (!overlay.open) overlay.showModal();
     },
     hide() {
       if (overlay.open) overlay.close();
       unlockScroll();
+      untrackViewport();
     },
     destroy() {
       if (overlay.open) overlay.close();
       unlockScroll();
+      untrackViewport();
       styleEl.remove();
       overlay.remove();
     },

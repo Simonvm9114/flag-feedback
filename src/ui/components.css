@@ -265,10 +265,16 @@
 /* ── Mobile bottom sheet ──────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-  /* Dim the backdrop; touch-action:none prevents iOS elastic-scroll from
-     propagating through to the host page — the card re-enables pan-y.
-     overflow:hidden clips sub-pixel DPR rounding at the dialog boundary. */
+  /* Pin the dialog to the visual viewport. iOS does NOT shrink fixed / top-layer
+     elements when the keyboard opens, so we size and offset the dialog from the
+     JS-synced visualViewport vars — the dialog is the single source of truth for
+     keyboard avoidance (no doubled margin offset on the card).
+     touch-action:none blocks iOS elastic-scroll chaining; the card re-enables
+     pan-y. overflow:hidden clips sub-pixel DPR rounding at the dialog boundary. */
   .ff-panel-overlay[open] {
+    top: var(--ff-panel-vvp-top, 0px);
+    bottom: auto;
+    height: var(--ff-panel-vvp-height, 100%);
     flex-direction: column;
     justify-content: flex-end;
     align-items: stretch;
@@ -286,11 +292,11 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     touch-action: pan-y;
-    /* 100% = dialog height = visual viewport height (the <dialog> top layer is
-       VVP-bounded on iOS, so it already excludes the keyboard). */
+    /* 100% = dialog height = visual viewport height (set above), so the card is
+       already constrained to the area above the keyboard. */
     max-height: min(85svh, calc(100% - env(safe-area-inset-bottom, 0px)));
     /* Only the home-indicator safe area — keyboard exclusion is handled by the
-       dialog's top-layer positioning, not margin-bottom. */
+       dialog height, not margin-bottom. */
     margin-bottom: env(safe-area-inset-bottom, 0px);
   }
 
